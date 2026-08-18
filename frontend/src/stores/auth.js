@@ -13,11 +13,16 @@ export const useAuthStore = defineStore('auth', {
     isAdmin: (state) => state.user?.role === 'admin'
   },
   actions: {
-    async login(username, password) {
+    async login(username, password, captchaKey, captchaAnswer) {
       this.loading = true;
       this.error = null;
       try {
-        const response = await api.post('/auth/login', { username, password });
+        const response = await api.post('/auth/login', { 
+          username, 
+          password,
+          captchaKey,
+          captchaAnswer
+        });
         if (response.data.success) {
           const { token, user } = response.data.data;
           this.token = token;
