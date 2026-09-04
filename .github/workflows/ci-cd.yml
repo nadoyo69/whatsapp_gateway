@@ -1,4 +1,4 @@
-﻿name: CI/CD Pipeline - WhatsApp Gateway
+name: CI/CD Pipeline - WhatsApp Gateway
 
 on:
   push:
@@ -12,18 +12,15 @@ on:
   workflow_dispatch:
 
 jobs:
-  # ==========================================================
-  # JOB 1: Continuous Integration (Lint, Build & Validate)
-  # ==========================================================
   ci-test-build:
-    name: 🧪 CI - Build & Test Validation
+    name: CI - Build & Test Validation
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Checkout Repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: 🟢 Setup Node.js 20
+      - name: Setup Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -32,35 +29,30 @@ jobs:
             backend/package.json
             frontend/package.json
 
-      # Backend Checks
-      - name: 📦 Install Backend Dependencies
+      - name: Install Backend Dependencies
         working-directory: ./backend
         run: npm install
 
-      - name: 🔍 Check Backend Code Syntax
+      - name: Check Backend Code Syntax
         working-directory: ./backend
         run: node -c src/server.js
 
-      # Frontend Checks & Production Build Test
-      - name: 📦 Install Frontend Dependencies
+      - name: Install Frontend Dependencies
         working-directory: ./frontend
         run: npm install
 
-      - name: 🏗️ Test Frontend Production Build
+      - name: Test Frontend Production Build
         working-directory: ./frontend
         run: npm run build
 
-  # ==========================================================
-  # JOB 2: Continuous Deployment (SSH ke Production Server)
-  # ==========================================================
   cd-deploy:
-    name: 🚀 CD - Deploy ke Server Production
+    name: CD - Deploy ke Server Production
     needs: ci-test-build
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🚀 Deploy ke Server via SSH
+      - name: Deploy ke Server via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -69,62 +61,53 @@ jobs:
           port: ${{ secrets.SERVER_PORT || 22 }}
           script_stop: true
           script: |
+            set -ex
             echo "=================================================="
-            echo "🚀 Memulai Deployment WhatsApp Gateway di Server..."
+            echo "Memulai Deployment WhatsApp Gateway di Server..."
             echo "=================================================="
 
-            echo "📍 Lokasi direktori target: ${{ secrets.SERVER_PATH }}"
+            echo "Target dir: ${{ secrets.SERVER_PATH }}"
             mkdir -p "${{ secrets.SERVER_PATH }}"
-            cd "${{ secrets.SERVER_PATH }}" || exit 1
-            echo "📂 Direktori aktif: $(pwd)"
+            cd "${{ secrets.SERVER_PATH }}"
+            echo "Active dir: $(pwd)"
 
             REPO_URL="https://nadoyo69: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@github.com/nadoyo69/whatsapp_gateway.git"
 
-            # 2. Inisialisasi / Hubungkan Git ke Server
-            # Menggunakan git init + fetch + checkout agar aman meskipun folder sudah berisi file .env
             if [ ! -d ".git" ]; then
-              echo "📦 Folder target belum memiliki repositori git, melakukan inisialisasi..."
+              echo "Initializing git repository..."
               git init
-              git remote add origin "$REPO_URL" || git remote set-url origin "$REPO_URL"
-              git fetch origin main
-              git checkout -f -B main origin/main
-            else
-              echo "📥 Menarik kode terbaru dari branch main..."
-              git remote set-url origin "$REPO_URL"
-              git fetch origin main || true
-              git reset --hard origin/main || true
+              git remote add origin "$REPO_URL" || true
             fi
 
-            # 3. Pastikan folder data dan direktori izin aman
+            echo "Fetching and checking out latest code..."
+            git remote set-url origin "$REPO_URL"
+            git fetch origin main
+            git checkout -f -B main origin/main
+            git reset --hard origin/main
+
             mkdir -p backups
 
-            # 4. Pastikan file .env ada di server
             if [ ! -f .env ]; then
-              echo "⚠️ File .env tidak ditemukan, membuat dari .env.example..."
+              echo "Creating .env from .env.example..."
               cp .env.example .env
             fi
 
-            # 5. Build dan jalankan container dengan strategi Zero-Downtime
-            echo "🐳 Melakukan build image di latar belakang (tanpa mematikan service aktif)..."
+            echo "Preparing Docker Compose..."
             if docker compose version > /dev/null 2>&1; then
               DOCKER_CMD="docker compose"
             else
               DOCKER_CMD="docker-compose"
             fi
 
+            echo "Building and restarting containers..."
             $DOCKER_CMD pull wa-postgres wa-mongo || true
             $DOCKER_CMD build
-
-            echo "🔄 Menukar container dengan versi baru (waktu transisi < 1 detik)..."
-            $DOCKER_CMD up -d --no-build --remove-orphans
-
-            # 6. Bersihkan image usang/dangling untuk hemat kapasitas disk server
-            echo "🧹 Membersihkan unused Docker images..."
+            $DOCKER_CMD up -d --remove-orphans
             docker image prune -f || true
 
-            echo "📊 Status Container Aktif:"
+            echo "Current containers status:"
             $DOCKER_CMD ps
 
             echo "=================================================="
-            echo "✅ Deployment WhatsApp Gateway Berhasil Selesai!"
+            echo "Deployment WhatsApp Gateway Selesai!"
             echo "=================================================="
