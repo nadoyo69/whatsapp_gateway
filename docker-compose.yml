@@ -78,6 +78,7 @@
       - uploads_data:/app/uploads
     networks:
       - wa_network
+      - npm_network
 
   # 4. Vue 3 Admin Dashboard (Nginx Web Server + Reverse Proxy)
   wa-frontend:
@@ -92,6 +93,7 @@
       - "${FRONTEND_PORT:-8080}:80"
     networks:
       - wa_network
+      - npm_network
 
 volumes:
   pg_data:
@@ -106,3 +108,5 @@ volumes:
 networks:
   wa_network:
     driver: bridge
+  npm_network:
+    external: true
