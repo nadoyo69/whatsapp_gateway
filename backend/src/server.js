@@ -4,10 +4,10 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 
-const { initPostgres } = require('./config/postgres');
-const { initMongo } = require('./config/mongo');
+const { initPostgres, pool } = require('./config/postgres');
+const { initMongo, mongoose } = require('./config/mongo');
 const { initSocket } = require('./services/socket');
-const { restoreAllSessions } = require('./services/baileys');
+const { restoreAllSessions, sessions } = require('./services/baileys');
 const { UPLOADS_DIR } = require('./middlewares/upload');
 
 // Import routes
@@ -38,14 +38,65 @@ app.use('/uploads', express.static(UPLOADS_DIR));
 // Initialize Socket.IO
 initSocket(server);
 
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.json({
-    status: 'ok',
+// Health check handler (supports Uptime Kuma, UptimeRobot, BetterUptime, etc.)
+const healthCheckHandler = async (req, res) => {
+  const startTime = Date.now();
+  let pgStatus = 'connected';
+  let mongoStatus = 'connected';
+  let isHealthy = true;
+
+  try {
+    await pool.query('SELECT 1');
+  } catch (err) {
+    pgStatus = 'error: ' + err.message;
+    isHealthy = false;
+  }
+
+  try {
+    if (mongoose.connection.readyState !== 1) {
+      mongoStatus = 'disconnected';
+      isHealthy = false;
+    }
+  } catch (err) {
+    mongoStatus = 'error: ' + err.message;
+    isHealthy = false;
+  }
+
+  const uptimeSeconds = process.uptime();
+  const formatUptime = (sec) => {
+    const d = Math.floor(sec / 86400);
+    const h = Math.floor((sec % 86400) / 3600);
+    const m = Math.floor((sec % 3600) / 60);
+    const s = Math.floor(sec % 60);
+    return d + 'd ' + h + 'h ' + m + 'm ' + s + 's';
+  };
+
+  const mem = process.memoryUsage();
+  const responseData = {
+    status: isHealthy ? 'ok' : 'degraded',
+    uptime: {
+      seconds: Math.floor(uptimeSeconds),
+      human: formatUptime(uptimeSeconds)
+    },
     timestamp: new Date().toISOString(),
-    service: 'WA-Gateway-Backend'
-  });
-});
+    service: 'WA-Gateway-Backend',
+    database: {
+      postgres: pgStatus,
+      mongodb: mongoStatus
+    },
+    activeSessions: sessions ? sessions.size : 0,
+    memory: {
+      rss: (mem.rss / 1024 / 1024).toFixed(2) + ' MB',
+      heapUsed: (mem.heapUsed / 1024 / 1024).toFixed(2) + ' MB'
+    },
+    responseTime: (Date.now() - startTime) + 'ms'
+  };
+
+  res.status(isHealthy ? 200 : 503).json(responseData);
+};
+
+app.get('/health', healthCheckHandler);
+app.get('/api/v1/health', healthCheckHandler);
 
 // Register API Routes
 app.use('/api/v1/auth', authRoutes);
