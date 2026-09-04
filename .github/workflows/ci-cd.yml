@@ -80,34 +80,42 @@ jobs:
             cd "${{ secrets.SERVER_PATH }}" || exit 1
             echo "📂 Direktori aktif: $(pwd)"
 
-            # 1. Konfigurasi Remote URL (Support Private Token via GH_PAT jika tersedia)
-            if [ -n "${{ secrets.GH_PAT }}" ]; then
-              REPO_URL="https://${{ secrets.GH_PAT }}@github.com/nadoyo69/whatsapp_gateway.git"
+            # 1. Tentukan Repo URL dengan autentikasi Token
+            TOKEN="${{ secrets.GH_PAT }}"
+            if [ -n "$TOKEN" ]; then
+              if echo "$TOKEN" | grep -q ":"; then
+                REPO_URL="https://${TOKEN}@github.com/nadoyo69/whatsapp_gateway.git"
+              else
+                REPO_URL="https://nadoyo69:${TOKEN}@github.com/nadoyo69/whatsapp_gateway.git"
+              fi
             else
-              REPO_URL="https://github.com/nadoyo69/whatsapp_gateway.git"
+              REPO_URL="https://nadoyo69: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@github.com/nadoyo69/whatsapp_gateway.git"
             fi
 
-            # 2. Periksa git repository
+            # 2. Inisialisasi atau Sync Git (Aman meskipun folder target sudah berisi file .env)
             if [ ! -d ".git" ]; then
-              echo "📦 Repository belum ada di server, melakukan initial clone..."
-              git clone "$REPO_URL" .
+              echo "📦 Folder belum memiliki .git, melakukan inisialisasi & sinkronisasi..."
+              git init
+              git remote add origin "$REPO_URL" || git remote set-url origin "$REPO_URL"
+              git fetch origin main
+              git checkout -f -B main origin/main
+            else
+              echo "📥 Menarik kode terbaru dari branch main..."
+              git remote set-url origin "$REPO_URL"
+              git fetch origin main || true
+              git reset --hard origin/main || true
             fi
 
-            echo "📥 Menarik kode terbaru dari branch main..."
-            git remote set-url origin "$REPO_URL"
-            git fetch origin main || true
-            git reset --hard origin/main || true
-
-            # 3. Pastikan direktori backup & volume siap
+            # 3. Pastikan direktori volume & backup siap
             mkdir -p backups
 
             # 4. Pastikan file .env ada di server
             if [ ! -f .env ]; then
-              echo "⚠️ File .env tidak ditemukan, membuat dari .env.example..."
+              echo "⚠️ File .env tidak ditemukan, menyalin dari .env.example..."
               cp .env.example .env
             fi
 
-            # 5. Build dan jalankan container (Zero-Downtime Strategy)
+            # 5. Siapkan Docker Compose & Build
             echo "🐳 Menyiapkan Docker Compose..."
             if docker compose version > /dev/null 2>&1; then
               DOCKER_CMD="docker compose"
@@ -121,7 +129,7 @@ jobs:
             echo "🏗️ Membangun container backend & frontend..."
             $DOCKER_CMD build
 
-            echo "🔄 Menjalankan container terbaru..."
+            echo "🔄 Menjalankan container terbaru (Zero-Downtime Transition)..."
             $DOCKER_CMD up -d --no-build --remove-orphans
 
             # 6. Bersihkan image usang untuk menghemat disk
