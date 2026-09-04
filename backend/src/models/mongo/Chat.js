@@ -9,10 +9,8 @@ const chatSchema = new mongoose.Schema(
     is_group: { type: Boolean, default: false },
     unread_count: { type: Number, default: 0 },
     last_message: {
-      text: String,
-      from_me: Boolean,
-      type: String,
-      timestamp: Date
+      type: mongoose.Schema.Types.Mixed,
+      default: null
     },
     updated_at: { type: Date, default: Date.now, index: true }
   },
