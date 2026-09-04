@@ -71,8 +71,6 @@ jobs:
           script: |
             echo "=================================================="
             echo "🚀 Memulai Deployment WhatsApp Gateway di Server..."
-            echo "Domain Frontend : whatsapp.nexforgex.my.id"
-            echo "Domain Backend  : api.whatsapp.nexforgex.my.id"
             echo "=================================================="
 
             echo "📍 Lokasi direktori target: ${{ secrets.SERVER_PATH }}"
@@ -80,59 +78,48 @@ jobs:
             cd "${{ secrets.SERVER_PATH }}" || exit 1
             echo "📂 Direktori aktif: $(pwd)"
 
-            # 1. Tentukan Repo URL dengan autentikasi Token
-            TOKEN="${{ secrets.GH_PAT }}"
-            if [ -n "$TOKEN" ]; then
-              if echo "$TOKEN" | grep -q ":"; then
-                REPO_URL="https://${TOKEN}@github.com/nadoyo69/whatsapp_gateway.git"
-              else
-                REPO_URL="https://nadoyo69:${TOKEN}@github.com/nadoyo69/whatsapp_gateway.git"
-              fi
-            else
-              REPO_URL="https://nadoyo69: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@github.com/nadoyo69/whatsapp_gateway.git"
-            fi
-
-            # 2. Inisialisasi atau Sync Git (Aman meskipun folder target sudah berisi file .env)
+            # 2. Periksa git repository (amankan file .env jika ada saat initial clone)
             if [ ! -d ".git" ]; then
-              echo "📦 Folder belum memiliki .git, melakukan inisialisasi & sinkronisasi..."
-              git init
-              git remote add origin "$REPO_URL" || git remote set-url origin "$REPO_URL"
-              git fetch origin main
-              git checkout -f -B main origin/main
-            else
-              echo "📥 Menarik kode terbaru dari branch main..."
-              git remote set-url origin "$REPO_URL"
-              git fetch origin main || true
-              git reset --hard origin/main || true
+              echo "📦 Repository belum ada di server, melakukan initial clone..."
+              if [ -f .env ]; then
+                cp .env /tmp/wa_gateway_env_backup
+              fi
+              git clone "https://nadoyo69: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@github.com/nadoyo69/whatsapp_gateway.git" .
+              if [ -f /tmp/wa_gateway_env_backup ]; then
+                cp /tmp/wa_gateway_env_backup .env
+                rm -f /tmp/wa_gateway_env_backup
+              fi
             fi
 
-            # 3. Pastikan direktori volume & backup siap
+            echo "📥 Menarik kode terbaru dari branch..."
+            git remote set-url origin "https://nadoyo69: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@github.com/nadoyo69/whatsapp_gateway.git"
+            git fetch origin main || true
+            git reset --hard origin/main || true
+
+            # 3. Pastikan folder data dan direktori izin aman
             mkdir -p backups
 
             # 4. Pastikan file .env ada di server
             if [ ! -f .env ]; then
-              echo "⚠️ File .env tidak ditemukan, menyalin dari .env.example..."
+              echo "⚠️ File .env tidak ditemukan, membuat dari .env.example..."
               cp .env.example .env
             fi
 
-            # 5. Siapkan Docker Compose & Build
-            echo "🐳 Menyiapkan Docker Compose..."
+            # 5. Build dan jalankan container dengan strategi Zero-Downtime
+            echo "🐳 Melakukan build image di latar belakang (tanpa mematikan service aktif)..."
             if docker compose version > /dev/null 2>&1; then
               DOCKER_CMD="docker compose"
             else
               DOCKER_CMD="docker-compose"
             fi
 
-            echo "📥 Menarik image base (postgres & mongo)..."
             $DOCKER_CMD pull wa-postgres wa-mongo || true
-
-            echo "🏗️ Membangun container backend & frontend..."
             $DOCKER_CMD build
 
-            echo "🔄 Menjalankan container terbaru (Zero-Downtime Transition)..."
+            echo "🔄 Menukar container dengan versi baru (waktu transisi < 1 detik)..."
             $DOCKER_CMD up -d --no-build --remove-orphans
 
-            # 6. Bersihkan image usang untuk menghemat disk
+            # 6. Bersihkan image usang/dangling untuk hemat kapasitas disk server
             echo "🧹 Membersihkan unused Docker images..."
             docker image prune -f || true
 
