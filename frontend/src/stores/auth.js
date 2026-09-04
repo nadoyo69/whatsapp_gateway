@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia';
+﻿import { defineStore } from 'pinia';
 import api from '../services/api';
 
 export const useAuthStore = defineStore('auth', {
@@ -13,15 +13,13 @@ export const useAuthStore = defineStore('auth', {
     isAdmin: (state) => state.user?.role === 'admin'
   },
   actions: {
-    async login(username, password, captchaKey, captchaAnswer) {
+    async login(username, password) {
       this.loading = true;
       this.error = null;
       try {
         const response = await api.post('/auth/login', { 
           username, 
-          password,
-          captchaKey,
-          captchaAnswer
+          password
         });
         if (response.data.success) {
           const { token, user } = response.data.data;
