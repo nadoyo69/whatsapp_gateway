@@ -11,7 +11,7 @@
       </main>
       <footer class="h-12 border-t border-[#2a3942]/60 px-8 flex items-center justify-between text-xs text-slate-500 bg-[#111b21]/50">
         <div class="flex items-center gap-2">
-          <span class="font-semibold text-slate-400">NadoyoGateway (NG)</span>
+          <span class="font-semibold text-slate-400">NexforgexGateway (NXG)</span>
           <span>•</span>
           <span>WhatsApp API Platform</span>
         </div>

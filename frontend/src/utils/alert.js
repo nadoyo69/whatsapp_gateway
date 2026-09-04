@@ -1,6 +1,6 @@
 import Swal from 'sweetalert2';
 
-// Base customized SweetAlert instance with Dark / NadoyoGateway styling
+// Base customized SweetAlert instance with Dark / NexforgexGateway styling
 const customSwal = Swal.mixin({
   background: '#111b21',
   color: '#e9edef',

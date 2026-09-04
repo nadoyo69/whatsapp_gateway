@@ -7,7 +7,7 @@
           NG
         </div>
         <div>
-          <h1 class="text-sm font-bold text-white tracking-wide">NadoyoGateway</h1>
+          <h1 class="text-sm font-bold text-white tracking-wide">NexforgexGateway</h1>
           <p class="text-[10px] text-emerald-400 font-medium">WhatsApp API Center</p>
         </div>
       </div>
@@ -52,7 +52,7 @@
 
       <!-- Version Indicator -->
       <div class="pt-2 border-t border-[#2a3942]/50 flex items-center justify-between text-[11px] text-slate-500">
-        <span>NadoyoGateway</span>
+        <span>NexforgexGateway</span>
         <span class="px-1.5 py-0.5 rounded bg-slate-800 text-emerald-400 font-mono font-bold text-[10px]">V1.0.0</span>
       </div>
     </div>

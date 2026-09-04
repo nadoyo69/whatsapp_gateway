@@ -5,12 +5,12 @@
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div class="flex items-center gap-2.5 mb-2">
-            <span class="px-3 py-1 text-xs font-bold bg-emerald-500/20 text-emerald-400 rounded-full border border-emerald-500/30">NadoyoGateway v1.0.0</span>
+            <span class="px-3 py-1 text-xs font-bold bg-emerald-500/20 text-emerald-400 rounded-full border border-emerald-500/30">NexforgexGateway v1.0.0</span>
             <span class="px-3 py-1 text-xs font-semibold bg-blue-500/20 text-blue-400 rounded-full border border-blue-500/30">REST API</span>
             <span class="px-3 py-1 text-xs font-semibold bg-cyan-500/20 text-cyan-400 rounded-full border border-cyan-500/30">Realtime Webhooks</span>
           </div>
           <h1 class="text-2xl font-black text-white tracking-wide">Developer API & Webhooks Reference</h1>
-          <p class="text-xs text-slate-400 mt-1">Panduan lengkap integrasi NadoyoGateway untuk sistem eksternal (Laravel, Node.js, Python, Golang, cURL, dll).</p>
+          <p class="text-xs text-slate-400 mt-1">Panduan lengkap integrasi NexforgexGateway untuk sistem eksternal (Laravel, Node.js, Python, Golang, cURL, dll).</p>
         </div>
       </div>
     </div>

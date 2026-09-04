@@ -7,7 +7,7 @@
           Welcome back, {{ user?.username }}!
           <span class="px-2 py-0.5 text-[11px] font-semibold bg-emerald-500/20 text-emerald-400 rounded-full border border-emerald-500/30">System Ready</span>
         </h2>
-        <p class="text-xs text-slate-400 mt-1">NadoyoGateway WhatsApp REST & Webhook Control Platform</p>
+        <p class="text-xs text-slate-400 mt-1">NexforgexGateway WhatsApp REST & Webhook Control Platform</p>
       </div>
       <div class="flex items-center gap-3">
         <RouterLink to="/sessions" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-lg shadow-emerald-600/20 transition flex items-center gap-2">

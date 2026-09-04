@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="min-h-screen bg-[#0b141a] flex items-center justify-center p-4 relative overflow-hidden">
     <!-- Background glowing orbs -->
     <div class="absolute -top-40 -left-40 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -8,9 +8,9 @@
       <!-- Brand Header -->
       <div class="text-center mb-8">
         <div class="inline-flex p-3.5 rounded-2xl bg-emerald-500/10 text-emerald-400 mb-3 ring-8 ring-emerald-500/5 font-black text-2xl">
-          NG
+          NXG
         </div>
-        <h2 class="text-2xl font-bold text-white tracking-wide">NadoyoGateway</h2>
+        <h2 class="text-2xl font-bold text-white tracking-wide">NexforgexGateway</h2>
         <p class="text-xs text-slate-400 mt-1">Multi-Device REST API & Control Center</p>
       </div>
 
@@ -80,7 +80,7 @@ const handleLogin = async () => {
   try {
     const success = await authStore.login(username.value, password.value);
     if (success) {
-      toastSuccess('Login successful! Welcome to NadoyoGateway.');
+      toastSuccess('Login successful! Welcome to NexforgexGateway.');
       router.push('/');
     }
   } catch (err) {
