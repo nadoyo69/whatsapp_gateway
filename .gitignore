@@ -1,4 +1,4 @@
-# ==========================================
+﻿# ==========================================
 # NadoyoGateway .gitignore
 # ==========================================
 
@@ -69,3 +69,15 @@ Thumbs.db
 # 9. Logs & Runtime Files
 logs/
 *.log
+
+# 10. Database Backups, Archives & Secrets
+backups/
+*.tar.gz
+*.sql.gz
+*.dump
+*.archive
+*.bak
+*.pem
+*.key
+id_rsa*
+id_ed25519*

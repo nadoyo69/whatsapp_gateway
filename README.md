@@ -1,17 +1,17 @@
-# 🚀 WhatsApp Unofficial API Gateway & Vue.js Admin Dashboard
+﻿# ðŸš€ WhatsApp Unofficial API Gateway & Vue.js Admin Dashboard
 
 Sistem WhatsApp API Gateway unofficial modern berbasis **Baileys (`@whiskeysockets/baileys`)**, **Node.js (Express + Socket.IO)**, arsitektur **Hybrid Database (PostgreSQL + MongoDB)**, serta **Admin Dashboard Vue 3 (Vite + Tailwind CSS)** yang siap dijalankan secara instan dengan **Docker Compose**.
 
 ---
 
-## 🌟 Fitur Utama
+## ðŸŒŸ Fitur Utama
 
-- 🔄 **Multi-Device & Multi-Session**: Jalankan banyak nomor / akun WhatsApp sekaligus dalam satu server.
-- 📷 **Live QR Code Scanner & 8-Digit Pairing Code**: Scan QR realtime via WebSocket (Socket.IO) atau generate kode pairing via nomor HP.
-- ⚡ **Hybrid Database Architecture**:
+- ðŸ”„ **Multi-Device & Multi-Session**: Jalankan banyak nomor / akun WhatsApp sekaligus dalam satu server.
+- ðŸ“· **Live QR Code Scanner & 8-Digit Pairing Code**: Scan QR realtime via WebSocket (Socket.IO) atau generate kode pairing via nomor HP.
+- âš¡ **Hybrid Database Architecture**:
   - **PostgreSQL**: Manajemen User Admin, API Tokens, Perangkat/Sessions, dan Konfigurasi Sistem.
   - **MongoDB**: Penyimpanan riwayat pesan (Raw WhatsApp payload, text, media metadatas), Chat threads, dan Audit Webhook Logs.
-- 📩 **Lengkap Semua Tipe Pesan**:
+- ðŸ“© **Lengkap Semua Tipe Pesan**:
   - Teks (Markdown formatting WA, Mentions, Quote Reply)
   - Gambar / Foto (Upload file multipart atau via image URL) + Caption
   - Dokumen (PDF, Excel, Word, ZIP, dll) + custom filename
@@ -20,15 +20,15 @@ Sistem WhatsApp API Gateway unofficial modern berbasis **Baileys (`@whiskeysocke
   - Lokasi GPS (Latitude / Longitude / Address)
   - Kontak (VCard 3.0)
   - Validasi Nomor WhatsApp (`check-number`)
-- 🔔 **Webhook System**:
+- ðŸ”” **Webhook System**:
   - Event `message.received`: Forward pesan masuk ke endpoint Anda secara realtime (Teks, Media URL, Lokasi, Kontak).
   - Event `message.status`: Update status pengiriman (`server_ack`, `delivered`, `read` / centang biru).
   - Event `session.status`: Perubahan status koneksi perangkat (`connected`, `disconnected`, `qr_ready`, `logged_out`).
   - Webhook Tester & Logging detail (latency, status code, request body) di dashboard.
-- 🛡️ **Keamanan & Autentikasi**:
+- ðŸ›¡ï¸ **Keamanan & Autentikasi**:
   - JWT Authentication untuk Admin Dashboard.
   - API Key Token (`X-API-Key` atau `Authorization: Bearer <TOKEN>`) untuk integrasi sistem eksternal.
-- 💻 **Admin Dashboard (Vue 3)**:
+- ðŸ’» **Admin Dashboard (Vue 3)**:
   - Monitoring Status & Statistik Session Realtime.
   - Interactive Message Sandbox (Kirim pesan/media langsung dari browser).
   - Live Chat Viewer & Thread History dari MongoDB.
@@ -38,7 +38,7 @@ Sistem WhatsApp API Gateway unofficial modern berbasis **Baileys (`@whiskeysocke
 
 ---
 
-## 🐳 Menjalankan dengan Docker Compose
+## ðŸ³ Menjalankan dengan Docker Compose
 
 ### 1. Masuk ke Direktori Project
 ```bash
@@ -64,7 +64,7 @@ docker compose up -d --build
 
 ---
 
-## 📖 Ringkasan Lengkap REST API Endpoints
+## ðŸ“– Ringkasan Lengkap REST API Endpoints
 
 Semua request REST API memerlukan API Key melalui salah satu header:
 - `X-API-Key: <YOUR_API_KEY>`
@@ -126,7 +126,7 @@ Semua request REST API memerlukan API Key melalui salah satu header:
 
 ---
 
-## 🔔 Spesifikasi Webhook & Format Tiap Event
+## ðŸ”” Spesifikasi Webhook & Format Tiap Event
 
 Jika Webhook URL dikonfigurasikan pada session, Gateway akan mengirimkan **HTTP POST** dengan format payload JSON berikut:
 
@@ -235,7 +235,7 @@ Authorization: Bearer <secret_anda>
 
 ---
 
-## 💻 Contoh Kode Integrasi
+## ðŸ’» Contoh Kode Integrasi
 
 ### PHP (Laravel)
 ```php
@@ -266,3 +266,4 @@ const response = await axios.post('http://localhost:3000/api/v1/messages/send-te
 
 console.log(response.data);
 ```
+

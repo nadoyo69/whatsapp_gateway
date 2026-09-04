@@ -1,0 +1,136 @@
+﻿name: CI/CD Pipeline - WhatsApp Gateway
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  # ==========================================================
+  # JOB 1: Continuous Integration (Lint, Build & Validate)
+  # ==========================================================
+  ci-test-build:
+    name: 🧪 CI - Build & Test Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend/package.json
+
+      # Backend Checks
+      - name: 📦 Install Backend Dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: 🔍 Check Backend Code Syntax
+        working-directory: ./backend
+        run: node -c src/server.js
+
+      # Frontend Checks & Production Build Test
+      - name: 📦 Install Frontend Dependencies
+        working-directory: ./frontend
+        run: npm install
+
+      - name: 🏗️ Test Frontend Production Build
+        working-directory: ./frontend
+        run: npm run build
+
+  # ==========================================================
+  # JOB 2: Continuous Deployment (SSH ke Production Server)
+  # ==========================================================
+  cd-deploy:
+    name: 🚀 CD - Deploy ke Server Production
+    needs: ci-test-build
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🚀 Deploy ke Server via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_PORT || 22 }}
+          script_stop: true
+          script: |
+            echo "=================================================="
+            echo "🚀 Memulai Deployment WhatsApp Gateway di Server..."
+            echo "Domain Frontend : whatsapp.nexforgex.my.id"
+            echo "Domain Backend  : api.whatsapp.nexforgex.my.id"
+            echo "=================================================="
+
+            echo "📍 Lokasi direktori target: ${{ secrets.SERVER_PATH }}"
+            mkdir -p "${{ secrets.SERVER_PATH }}"
+            cd "${{ secrets.SERVER_PATH }}" || exit 1
+            echo "📂 Direktori aktif: $(pwd)"
+
+            # 1. Konfigurasi Remote URL (Support Private Token via GH_PAT jika tersedia)
+            if [ -n "${{ secrets.GH_PAT }}" ]; then
+              REPO_URL="https://${{ secrets.GH_PAT }}@github.com/nadoyo69/whatsapp_gateway.git"
+            else
+              REPO_URL="https://github.com/nadoyo69/whatsapp_gateway.git"
+            fi
+
+            # 2. Periksa git repository
+            if [ ! -d ".git" ]; then
+              echo "📦 Repository belum ada di server, melakukan initial clone..."
+              git clone "$REPO_URL" .
+            fi
+
+            echo "📥 Menarik kode terbaru dari branch main..."
+            git remote set-url origin "$REPO_URL"
+            git fetch origin main || true
+            git reset --hard origin/main || true
+
+            # 3. Pastikan direktori backup & volume siap
+            mkdir -p backups
+
+            # 4. Pastikan file .env ada di server
+            if [ ! -f .env ]; then
+              echo "⚠️ File .env tidak ditemukan, membuat dari .env.example..."
+              cp .env.example .env
+            fi
+
+            # 5. Build dan jalankan container (Zero-Downtime Strategy)
+            echo "🐳 Menyiapkan Docker Compose..."
+            if docker compose version > /dev/null 2>&1; then
+              DOCKER_CMD="docker compose"
+            else
+              DOCKER_CMD="docker-compose"
+            fi
+
+            echo "📥 Menarik image base (postgres & mongo)..."
+            $DOCKER_CMD pull wa-postgres wa-mongo || true
+
+            echo "🏗️ Membangun container backend & frontend..."
+            $DOCKER_CMD build
+
+            echo "🔄 Menjalankan container terbaru..."
+            $DOCKER_CMD up -d --no-build --remove-orphans
+
+            # 6. Bersihkan image usang untuk menghemat disk
+            echo "🧹 Membersihkan unused Docker images..."
+            docker image prune -f || true
+
+            echo "📊 Status Container Aktif:"
+            $DOCKER_CMD ps
+
+            echo "=================================================="
+            echo "✅ Deployment WhatsApp Gateway Berhasil Selesai!"
+            echo "=================================================="
