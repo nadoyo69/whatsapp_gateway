@@ -1,7 +1,7 @@
 ﻿#!/usr/bin/env bash
 # ==============================================================================
 # Manual Server Deployment Script - WhatsApp Gateway
-# Domain: whatsapp.nexforgex.my.id & api.whatsapp.nexforgex.my.id
+# Domain: whatsapp.nexforgex.my.id & whatsapp-api.nexforgex.my.id
 # ==============================================================================
 set -e
 
