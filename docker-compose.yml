@@ -1,6 +1,6 @@
-﻿services:
+services:
   # 1. PostgreSQL Database (Relational Data: Users, API Keys, Devices/Sessions)
-  # Catatan: Port tidak diekspos ke host agar database hanya bisa diakses oleh docker internal
+  # Terisolasi penuh di Docker internal network
   wa-postgres:
     image: postgres:16-alpine
     container_name: wa-postgres
@@ -20,7 +20,7 @@
       - wa_network
 
   # 2. MongoDB Database (High-Throughput Logs: Raw WhatsApp Messages, Chats, Webhook History)
-  # Catatan: Port tidak diekspos ke host agar database hanya bisa diakses oleh docker internal
+  # Terisolasi penuh di Docker internal network
   wa-mongo:
     image: mongo:7.0
     container_name: wa-mongo
@@ -40,6 +40,7 @@
       - wa_network
 
   # 3. Node.js Backend (Baileys WA Gateway + REST API + Socket.IO)
+  # Port tidak diekspos ke host publik. Hanya diakses oleh NPM via npm_network
   wa-backend:
     build:
       context: ./backend
@@ -71,8 +72,6 @@
       CLIENT_URL: ${CLIENT_URL:-https://whatsapp.nexforgex.my.id,*}
       SESSIONS_PATH: /app/sessions
       UPLOADS_PATH: /app/uploads
-    ports:
-      - "${BACKEND_PORT:-3000}:3000"
     volumes:
       - sessions_data:/app/sessions
       - uploads_data:/app/uploads
@@ -81,6 +80,7 @@
       - npm_network
 
   # 4. Vue 3 Admin Dashboard (Nginx Web Server + Reverse Proxy)
+  # Port tidak diekspos ke host publik. Hanya diakses oleh NPM via npm_network
   wa-frontend:
     build:
       context: ./frontend
@@ -89,8 +89,6 @@
     restart: unless-stopped
     depends_on:
       - wa-backend
-    ports:
-      - "${FRONTEND_PORT:-8080}:80"
     networks:
       - wa_network
       - npm_network
