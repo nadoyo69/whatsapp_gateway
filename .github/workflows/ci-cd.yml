@@ -78,23 +78,22 @@ jobs:
             cd "${{ secrets.SERVER_PATH }}" || exit 1
             echo "📂 Direktori aktif: $(pwd)"
 
-            # 2. Periksa git repository (amankan file .env jika ada saat initial clone)
-            if [ ! -d ".git" ]; then
-              echo "📦 Repository belum ada di server, melakukan initial clone..."
-              if [ -f .env ]; then
-                cp .env /tmp/wa_gateway_env_backup
-              fi
-              git clone "https://nadoyo69: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@github.com/nadoyo69/whatsapp_gateway.git" .
-              if [ -f /tmp/wa_gateway_env_backup ]; then
-                cp /tmp/wa_gateway_env_backup .env
-                rm -f /tmp/wa_gateway_env_backup
-              fi
-            fi
+            REPO_URL="https://nadoyo69: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@github.com/nadoyo69/whatsapp_gateway.git"
 
-            echo "📥 Menarik kode terbaru dari branch..."
-            git remote set-url origin "https://nadoyo69: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@github.com/nadoyo69/whatsapp_gateway.git"
-            git fetch origin main || true
-            git reset --hard origin/main || true
+            # 2. Inisialisasi / Hubungkan Git ke Server
+            # Menggunakan git init + fetch + checkout agar aman meskipun folder sudah berisi file .env
+            if [ ! -d ".git" ]; then
+              echo "📦 Folder target belum memiliki repositori git, melakukan inisialisasi..."
+              git init
+              git remote add origin "$REPO_URL" || git remote set-url origin "$REPO_URL"
+              git fetch origin main
+              git checkout -f -B main origin/main
+            else
+              echo "📥 Menarik kode terbaru dari branch main..."
+              git remote set-url origin "$REPO_URL"
+              git fetch origin main || true
+              git reset --hard origin/main || true
+            fi
 
             # 3. Pastikan folder data dan direktori izin aman
             mkdir -p backups
