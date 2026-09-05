@@ -68,7 +68,7 @@ import { showError, toastSuccess } from '../utils/alert';
 const router = useRouter();
 const authStore = useAuthStore();
 
-const username = ref('admin');
+const username = ref('');
 const password = ref('');
 
 const loading = ref(false);
