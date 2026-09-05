@@ -4,6 +4,7 @@ const {
   DisconnectReason,
   fetchLatestBaileysVersion,
   makeCacheableSignalKeyStore,
+  downloadMediaMessage,
   proto
 } = require('@whiskeysockets/baileys');
 const pino = require('pino');
@@ -233,6 +234,26 @@ async function initSession(sessionId, options = {}) {
 
           // 4. Dispatch to Webhook endpoint
           if (!fromMe) {
+            let imageBase64 = null;
+            if (parsed.type === 'image') {
+              try {
+                const buffer = await downloadMediaMessage(
+                  msg,
+                  'buffer',
+                  {},
+                  {
+                    logger: pino({ level: 'silent' }),
+                    reuploadRequest: sock.updateMediaMessage
+                  }
+                );
+                if (buffer && Buffer.isBuffer(buffer)) {
+                  imageBase64 = buffer.toString('base64');
+                }
+              } catch (dlErr) {
+                console.warn(`[Baileys] Failed to download image for webhook ${sessionId}:`, dlErr.message);
+              }
+            }
+
             await dispatchDeviceWebhook(sessionId, 'message.received', {
               messageId,
               remoteJid,
@@ -243,6 +264,7 @@ async function initSession(sessionId, options = {}) {
               text: parsed.text,
               mimetype: parsed.mimetype,
               filename: parsed.filename,
+              image_base64: imageBase64,
               location: parsed.latitude ? { lat: parsed.latitude, lng: parsed.longitude, name: parsed.name, address: parsed.address } : null,
               contact: parsed.displayName ? { name: parsed.displayName, vcard: parsed.vcard } : null,
               timestamp: messageDoc.timestamp
