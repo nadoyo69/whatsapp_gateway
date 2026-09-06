@@ -254,10 +254,16 @@ async function initSession(sessionId, options = {}) {
               }
             }
 
+            const participant = msg.key.participant || msg.participant || null;
+            const senderJid = isGroup ? (participant || remoteJid) : remoteJid;
+            const senderPhone = extractPhoneFromJid(senderJid).split(':')[0];
+
             await dispatchDeviceWebhook(sessionId, 'message.received', {
               messageId,
               remoteJid,
-              phone: extractPhoneFromJid(remoteJid),
+              senderJid,
+              phone: senderPhone,
+              participant: participant ? extractPhoneFromJid(participant).split(':')[0] : null,
               senderName,
               isGroup,
               type: parsed.type,
