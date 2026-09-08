@@ -19,6 +19,7 @@ const webhookRoutes = require('./routes/webhooks');
 const apiKeyRoutes = require('./routes/apiKeys');
 const userRoutes = require('./routes/users');
 const toolRoutes = require('./routes/tools');
+const reportRoutes = require('./routes/reports');
 
 const app = express();
 const server = http.createServer(app);
@@ -107,6 +108,7 @@ app.use('/api/v1/webhooks', webhookRoutes);
 app.use('/api/v1/api-keys', apiKeyRoutes);
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/tools', toolRoutes);
+app.use('/api/v1/reports', reportRoutes);
 
 // Global Error Handler
 app.use((err, req, res, next) => {

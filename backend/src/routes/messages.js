@@ -3,9 +3,11 @@ const router = express.Router();
 const messageController = require('../controllers/messageController');
 const { authAny } = require('../middlewares/auth');
 const { upload } = require('../middlewares/upload');
+const { apiLogger } = require('../middlewares/apiLogger');
 
 // Support both JWT or API Key for message dispatching
 router.use(authAny);
+router.use(apiLogger);
 
 router.post('/send-text', messageController.sendText);
 router.post('/send-image', upload.single('file'), messageController.sendImage);

@@ -45,7 +45,7 @@ const pageTitle = computed(() => {
     case 'dashboard': return 'System Overview';
     case 'sessions': return 'WhatsApp Devices & Sessions';
     case 'sender': return 'Interactive Message Sandbox';
-    case 'chats': return 'Live Chats & MongoDB Logs';
+    case 'reports': return 'Gateway Usage & Analytics Reports';
     case 'webhooks': return 'Webhook Dispatcher & Audit Logs';
     case 'api-keys': return 'API Keys & Access Tokens';
     case 'users': return 'System Administrators';

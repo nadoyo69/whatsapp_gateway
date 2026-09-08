@@ -59,6 +59,24 @@ async function initPostgres() {
       );
     `);
 
+    // 5. Table API Usage Logs (Per API Key & Per Device analytics)
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS api_usage_logs (
+        id BIGSERIAL PRIMARY KEY,
+        api_token_id INTEGER REFERENCES api_tokens(id) ON DELETE SET NULL,
+        session_id VARCHAR(100),
+        endpoint VARCHAR(255) NOT NULL,
+        method VARCHAR(10) NOT NULL,
+        status_code INTEGER NOT NULL,
+        response_time_ms INTEGER DEFAULT 0,
+        ip_address VARCHAR(100),
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+      CREATE INDEX IF NOT EXISTS idx_api_usage_token ON api_usage_logs(api_token_id);
+      CREATE INDEX IF NOT EXISTS idx_api_usage_session ON api_usage_logs(session_id);
+      CREATE INDEX IF NOT EXISTS idx_api_usage_created ON api_usage_logs(created_at);
+    `);
+
     // Seed default Admin user if empty
     const userRes = await client.query('SELECT COUNT(*) FROM users');
     if (parseInt(userRes.rows[0].count) === 0) {

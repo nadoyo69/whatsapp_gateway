@@ -675,35 +675,35 @@ app.listen(8000);</pre>
       </div>
     </div>
 
-    <!-- ==================== SECTION 6: CHAT & ARCHIVE LOGS ==================== -->
-    <div v-if="activeCategory === 'chats'" class="space-y-6">
+    <!-- ==================== SECTION 6: USAGE & ANALYTICS REPORTS ==================== -->
+    <div v-if="activeCategory === 'reports'" class="space-y-6">
       <div class="glass-panel p-6 rounded-3xl border border-[#2a3942] space-y-4">
         <h3 class="text-base font-bold text-white flex items-center gap-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
-          Chat & Message History API
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+          Gateway Usage & Analytics Reports API
         </h3>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs font-mono">
             <tbody class="divide-y divide-[#2a3942]">
               <tr>
-                <td class="py-3 text-blue-400 font-bold">GET</td>
-                <td class="py-3 text-white">/api/v1/chats/:sessionId</td>
-                <td class="py-3 text-slate-400 font-sans">Ambil daftar percakapan / contact threads (mendukung query <code>?search=</code> & <code>?page=</code>).</td>
+                <td class="py-3 text-emerald-400 font-bold">GET</td>
+                <td class="py-3 text-white">/api/v1/reports/summary</td>
+                <td class="py-3 text-slate-400 font-sans">Ringkasan metrik global (pesan masuk/keluar, total hit API, success rate) dengan parameter <code>?range=today|7d|30d|all</code>.</td>
               </tr>
               <tr>
-                <td class="py-3 text-blue-400 font-bold">GET</td>
-                <td class="py-3 text-white">/api/v1/chats/:sessionId/:jid/messages</td>
-                <td class="py-3 text-slate-400 font-sans">Ambil riwayat pesan masuk dan keluar dengan kontak WhatsApp tertentu.</td>
+                <td class="py-3 text-emerald-400 font-bold">GET</td>
+                <td class="py-3 text-white">/api/v1/reports/devices</td>
+                <td class="py-3 text-slate-400 font-sans">Laporan pemakaian per nomor WhatsApp/device (pesan sent, received, tipe pesan, delivery rate, dan hit API).</td>
               </tr>
               <tr>
-                <td class="py-3 text-blue-400 font-bold">GET</td>
-                <td class="py-3 text-white">/api/v1/chats/stats/dashboard</td>
-                <td class="py-3 text-slate-400 font-sans">Statistik aggregasi total pesan, volume 24 jam, dan success rate webhook.</td>
+                <td class="py-3 text-emerald-400 font-bold">GET</td>
+                <td class="py-3 text-white">/api/v1/reports/api-keys</td>
+                <td class="py-3 text-slate-400 font-sans">Laporan pemakaian per API Token klien (total hit, sukses 2xx vs error 4xx/5xx, rata-rata latensi, top endpoints).</td>
               </tr>
               <tr>
-                <td class="py-3 text-blue-400 font-bold">GET</td>
-                <td class="py-3 text-white">/api/v1/webhooks/logs</td>
-                <td class="py-3 text-slate-400 font-sans">Ambil riwayat log pengiriman webhook (query <code>?event=</code>, <code>?success=</code>).</td>
+                <td class="py-3 text-emerald-400 font-bold">GET</td>
+                <td class="py-3 text-white">/api/v1/reports/logs</td>
+                <td class="py-3 text-slate-400 font-sans">Audit log panggilan API terkini secara mendetail (dukungan filter <code>?status=success|error</code>, <code>?page=</code>, <code>?limit=</code>).</td>
               </tr>
             </tbody>
           </table>
@@ -724,7 +724,7 @@ const categories = [
   { id: 'messaging', label: 'Kirim Pesan (Send API)', icon: '💬' },
   { id: 'sessions', label: 'Sessions & Device QR', icon: '📱' },
   { id: 'tools', label: 'Tools & Cek Nomor', icon: '🔍' },
-  { id: 'chats', label: 'Chat & Message History', icon: '📂' },
+  { id: 'reports', label: 'Usage & Analytics Reports', icon: '📊' },
   { id: 'auth', label: 'Autentikasi & Header', icon: '🔑' }
 ];
 </script>

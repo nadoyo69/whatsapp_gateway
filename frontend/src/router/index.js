@@ -31,9 +31,13 @@ const router = createRouter({
           component: () => import('../views/SenderView.vue')
         },
         {
+          path: 'reports',
+          name: 'reports',
+          component: () => import('../views/UsageReportsView.vue')
+        },
+        {
           path: 'chats',
-          name: 'chats',
-          component: () => import('../views/ChatsView.vue')
+          redirect: '/reports'
         },
         {
           path: 'webhooks',
