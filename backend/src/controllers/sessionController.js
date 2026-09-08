@@ -9,13 +9,37 @@ const {
   restartSession,
   sessions
 } = require('../services/baileys');
+const { verifySessionOwnership } = require('../utils/sessionGuard');
 
 /**
  * List all sessions/devices
+ * - If called via API Key: only returns sessions assigned to this API Key or global sessions
+ * - If called via Admin JWT: returns all sessions with token owner information
  */
 async function listSessions(req, res) {
   try {
-    const result = await pool.query('SELECT * FROM devices ORDER BY id DESC');
+    let query;
+    const params = [];
+
+    if (req.apiKey) {
+      query = `
+        SELECT d.*, t.name as token_name 
+        FROM devices d 
+        LEFT JOIN api_tokens t ON d.api_token_id = t.id 
+        WHERE d.api_token_id = $1 OR d.api_token_id IS NULL
+        ORDER BY d.id DESC
+      `;
+      params.push(req.apiKey.id);
+    } else {
+      query = `
+        SELECT d.*, t.name as token_name 
+        FROM devices d 
+        LEFT JOIN api_tokens t ON d.api_token_id = t.id 
+        ORDER BY d.id DESC
+      `;
+    }
+
+    const result = await pool.query(query, params);
     const devices = result.rows.map(dev => {
       const sock = sessions.get(dev.session_id);
       const isLiveActive = !!sock?.user;
@@ -34,9 +58,11 @@ async function listSessions(req, res) {
 
 /**
  * Create a new session and initialize Baileys connection
+ * - Automatically assigns session to caller's API Key if called via API Key
+ * - Allows admin via dashboard to optionally assign to an API Key or leave as global
  */
 async function createSession(req, res) {
-  const { sessionId, name, webhookUrl, webhookSecret, autoRead } = req.body;
+  const { sessionId, name, webhookUrl, webhookSecret, autoRead, apiTokenId } = req.body;
 
   if (!sessionId || !name) {
     return res.status(400).json({ success: false, message: 'sessionId and name are required.' });
@@ -48,6 +74,14 @@ async function createSession(req, res) {
     return res.status(400).json({ success: false, message: 'Invalid sessionId format.' });
   }
 
+  // Determine assigned API Token ID
+  let assignedTokenId = null;
+  if (req.apiKey) {
+    assignedTokenId = req.apiKey.id;
+  } else if (apiTokenId) {
+    assignedTokenId = parseInt(apiTokenId, 10) || null;
+  }
+
   try {
     const existing = await pool.query('SELECT id FROM devices WHERE session_id = $1', [cleanId]);
     if (existing.rows.length > 0) {
@@ -55,9 +89,9 @@ async function createSession(req, res) {
     }
 
     const insertRes = await pool.query(
-      `INSERT INTO devices (session_id, name, webhook_url, webhook_secret, auto_read, status)
-       VALUES ($1, $2, $3, $4, $5, 'connecting') RETURNING *`,
-      [cleanId, name, webhookUrl || null, webhookSecret || null, !!autoRead]
+      `INSERT INTO devices (session_id, name, webhook_url, webhook_secret, auto_read, status, api_token_id)
+       VALUES ($1, $2, $3, $4, $5, 'connecting', $6) RETURNING *`,
+      [cleanId, name, webhookUrl || null, webhookSecret || null, !!autoRead, assignedTokenId]
     );
 
     // Trigger Baileys socket initialization
@@ -81,8 +115,19 @@ async function createSession(req, res) {
 async function getSessionStatus(req, res) {
   const { sessionId } = req.params;
 
+  const authCheck = await verifySessionOwnership(sessionId, req);
+  if (!authCheck.allowed) {
+    return res.status(authCheck.status || 403).json({ success: false, message: authCheck.message });
+  }
+
   try {
-    const result = await pool.query('SELECT * FROM devices WHERE session_id = $1', [sessionId]);
+    const result = await pool.query(
+      `SELECT d.*, t.name as token_name 
+       FROM devices d 
+       LEFT JOIN api_tokens t ON d.api_token_id = t.id 
+       WHERE d.session_id = $1`,
+      [sessionId]
+    );
     if (result.rows.length === 0) {
       return res.status(404).json({ success: false, message: `Session "${sessionId}" not found.` });
     }
@@ -113,6 +158,11 @@ async function getSessionStatus(req, res) {
 async function getSessionQRRoute(req, res) {
   const { sessionId } = req.params;
 
+  const authCheck = await verifySessionOwnership(sessionId, req);
+  if (!authCheck.allowed) {
+    return res.status(authCheck.status || 403).json({ success: false, message: authCheck.message });
+  }
+
   const qrInfo = getSessionQR(sessionId);
   const sock = sessions.get(sessionId);
 
@@ -125,7 +175,6 @@ async function getSessionQRRoute(req, res) {
   }
 
   if (!qrInfo) {
-    // If not initiated yet, start session
     initSession(sessionId).catch(() => {});
     return res.status(202).json({
       success: true,
@@ -152,6 +201,11 @@ async function requestPairingCodeRoute(req, res) {
   const { sessionId } = req.params;
   const { phoneNumber } = req.body;
 
+  const authCheck = await verifySessionOwnership(sessionId, req);
+  if (!authCheck.allowed) {
+    return res.status(authCheck.status || 403).json({ success: false, message: authCheck.message });
+  }
+
   if (!phoneNumber) {
     return res.status(400).json({ success: false, message: 'phoneNumber is required (e.g. 628123456789).' });
   }
@@ -173,6 +227,12 @@ async function requestPairingCodeRoute(req, res) {
  */
 async function restartSessionRoute(req, res) {
   const { sessionId } = req.params;
+
+  const authCheck = await verifySessionOwnership(sessionId, req);
+  if (!authCheck.allowed) {
+    return res.status(authCheck.status || 403).json({ success: false, message: authCheck.message });
+  }
+
   try {
     await restartSession(sessionId);
     return res.json({ success: true, message: `Session "${sessionId}" restarted.` });
@@ -186,6 +246,12 @@ async function restartSessionRoute(req, res) {
  */
 async function logoutSessionRoute(req, res) {
   const { sessionId } = req.params;
+
+  const authCheck = await verifySessionOwnership(sessionId, req);
+  if (!authCheck.allowed) {
+    return res.status(authCheck.status || 403).json({ success: false, message: authCheck.message });
+  }
+
   try {
     const result = await logoutSession(sessionId);
     return res.json(result);
@@ -195,13 +261,27 @@ async function logoutSessionRoute(req, res) {
 }
 
 /**
- * Update session settings (webhook URL, auto read, name)
+ * Update session settings (webhook URL, auto read, name, apiTokenId)
  */
 async function updateSessionSettings(req, res) {
   const { sessionId } = req.params;
-  const { name, webhookUrl, webhookSecret, autoRead } = req.body;
+  const { name, webhookUrl, webhookSecret, autoRead, apiTokenId } = req.body;
+
+  const authCheck = await verifySessionOwnership(sessionId, req);
+  if (!authCheck.allowed) {
+    return res.status(authCheck.status || 403).json({ success: false, message: authCheck.message });
+  }
 
   try {
+    // Only dashboard admin (req.user) can transfer or reassign api_token_id
+    let tokenUpdateClause = '';
+    const params = [name, webhookUrl, webhookSecret, autoRead, sessionId];
+
+    if (req.user && apiTokenId !== undefined) {
+      params.push(apiTokenId === '' || apiTokenId === null ? null : parseInt(apiTokenId, 10));
+      tokenUpdateClause = `, api_token_id = $${params.length}`;
+    }
+
     const result = await pool.query(
       `UPDATE devices 
        SET name = COALESCE($1, name),
@@ -209,8 +289,9 @@ async function updateSessionSettings(req, res) {
            webhook_secret = $3,
            auto_read = COALESCE($4, auto_read),
            updated_at = NOW()
+           ${tokenUpdateClause}
        WHERE session_id = $5 RETURNING *`,
-      [name, webhookUrl, webhookSecret, autoRead, sessionId]
+      params
     );
 
     if (result.rows.length === 0) {
@@ -228,6 +309,11 @@ async function updateSessionSettings(req, res) {
  */
 async function deleteSession(req, res) {
   const { sessionId } = req.params;
+
+  const authCheck = await verifySessionOwnership(sessionId, req);
+  if (!authCheck.allowed) {
+    return res.status(authCheck.status || 403).json({ success: false, message: authCheck.message });
+  }
 
   try {
     await logoutSession(sessionId);

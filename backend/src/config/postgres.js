@@ -45,9 +45,12 @@ async function initPostgres() {
         webhook_url TEXT,
         webhook_secret VARCHAR(255),
         auto_read BOOLEAN DEFAULT FALSE,
+        api_token_id INTEGER REFERENCES api_tokens(id) ON DELETE SET NULL,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
+      ALTER TABLE devices ADD COLUMN IF NOT EXISTS api_token_id INTEGER REFERENCES api_tokens(id) ON DELETE SET NULL;
+      CREATE INDEX IF NOT EXISTS idx_devices_api_token ON devices(api_token_id);
     `);
 
     // 4. Table Settings

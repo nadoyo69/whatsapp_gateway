@@ -33,6 +33,7 @@
               <th class="px-6 py-4">Device / Session Name</th>
               <th class="px-6 py-4">Session ID</th>
               <th class="px-6 py-4">Phone Number</th>
+              <th class="px-6 py-4">Owner / API Key</th>
               <th class="px-6 py-4">Status</th>
               <th class="px-6 py-4">Webhook Target</th>
               <th class="px-6 py-4 text-right">Actions</th>
@@ -50,6 +51,15 @@
               </td>
               <td class="px-6 py-4 font-mono text-emerald-400">{{ s.session_id }}</td>
               <td class="px-6 py-4 font-mono text-slate-300">{{ s.phone_number || '-' }}</td>
+              <td class="px-6 py-4">
+                <span v-if="s.token_name" class="px-2.5 py-1 rounded-lg bg-purple-500/15 text-purple-300 border border-purple-500/30 text-[11px] font-mono font-semibold inline-flex items-center gap-1.5" :title="'Linked to API Key: ' + s.token_name">
+                  <span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
+                  {{ s.token_name }}
+                </span>
+                <span v-else class="px-2 py-0.5 rounded-lg bg-slate-800 text-slate-400 border border-[#2a3942] text-[11px] font-semibold">
+                  Global / Shared
+                </span>
+              </td>
               <td class="px-6 py-4">
                 <StatusBadge :status="s.status" :is-live="s.is_live_active" />
               </td>
@@ -186,6 +196,20 @@
             />
           </div>
 
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Assign to API Key (Optional)</label>
+            <select 
+              v-model="newSession.apiTokenId" 
+              class="w-full px-4 py-2.5 bg-[#202c33] border border-[#2a3942] rounded-xl text-white text-xs focus:border-emerald-500 focus:outline-none"
+            >
+              <option value="">Global / Shared (Accessible to all authorized keys)</option>
+              <option v-for="k in apiKeys" :key="k.id" :value="k.id">
+                {{ k.name }} (Token: {{ k.token.slice(0, 6) }}...)
+              </option>
+            </select>
+            <p class="text-[10px] text-slate-500 mt-1">If assigned, only this specific API Key can use and control this session.</p>
+          </div>
+
           <div class="flex items-center gap-2 pt-1">
             <input 
               v-model="newSession.autoRead" 
@@ -252,6 +276,20 @@
             />
           </div>
 
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Owner / Assigned API Key</label>
+            <select 
+              v-model="editSettings.apiTokenId" 
+              class="w-full px-4 py-2.5 bg-[#202c33] border border-[#2a3942] rounded-xl text-white text-xs focus:border-emerald-500 focus:outline-none"
+            >
+              <option value="">Global / Shared (Accessible to all authorized keys)</option>
+              <option v-for="k in apiKeys" :key="k.id" :value="k.id">
+                {{ k.name }} (Token: {{ k.token.slice(0, 6) }}...)
+              </option>
+            </select>
+            <p class="text-[10px] text-slate-500 mt-1">Reassign this device to a specific client API Key or leave Global.</p>
+          </div>
+
           <div class="flex items-center gap-2 pt-1">
             <input 
               v-model="editSettings.autoRead" 
@@ -295,6 +333,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useSessionsStore } from '../stores/sessions';
+import api from '../services/api';
 import StatusBadge from '../components/StatusBadge.vue';
 import QrModal from '../components/QrModal.vue';
 import PairingModal from '../components/PairingModal.vue';
@@ -302,6 +341,7 @@ import { showSuccess, showError, confirmDialog, toastSuccess } from '../utils/al
 
 const sessionsStore = useSessionsStore();
 const sessions = computed(() => sessionsStore.sessions);
+const apiKeys = ref([]);
 
 const showCreateModal = ref(false);
 const showSettingsModal = ref(false);
@@ -316,15 +356,26 @@ const newSession = ref({
   name: '',
   webhookUrl: '',
   webhookSecret: '',
-  autoRead: false
+  autoRead: false,
+  apiTokenId: ''
 });
 
 const editSettings = ref({
   name: '',
   webhookUrl: '',
   webhookSecret: '',
-  autoRead: false
+  autoRead: false,
+  apiTokenId: ''
 });
+
+const fetchApiKeys = async () => {
+  try {
+    const res = await api.get('/api-keys');
+    if (res.data.success) {
+      apiKeys.value = res.data.data;
+    }
+  } catch (err) {}
+};
 
 const openQr = (sessionId) => {
   targetSessionId.value = sessionId;
@@ -342,7 +393,8 @@ const openSettings = (device) => {
     name: device.name,
     webhookUrl: device.webhook_url || '',
     webhookSecret: device.webhook_secret || '',
-    autoRead: !!device.auto_read
+    autoRead: !!device.auto_read,
+    apiTokenId: device.api_token_id || ''
   };
   showSettingsModal.value = true;
 };
@@ -353,7 +405,7 @@ const handleCreateSession = async () => {
     await sessionsStore.createSession(newSession.value);
     const sId = newSession.value.sessionId;
     showCreateModal.value = false;
-    newSession.value = { sessionId: '', name: '', webhookUrl: '', webhookSecret: '', autoRead: false };
+    newSession.value = { sessionId: '', name: '', webhookUrl: '', webhookSecret: '', autoRead: false, apiTokenId: '' };
     toastSuccess(`Session "${sId}" created successfully.`);
     openQr(sId);
   } catch (err) {
@@ -425,5 +477,6 @@ const handleQrConnected = () => {
 
 onMounted(() => {
   sessionsStore.fetchSessions();
+  fetchApiKeys();
 });
 </script>

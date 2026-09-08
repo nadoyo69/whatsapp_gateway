@@ -6,11 +6,19 @@ const { formatToWhatsAppJid, extractPhoneFromJid } = require('../utils/format');
 const Message = require('../models/mongo/Message');
 const Chat = require('../models/mongo/Chat');
 const { emitToSession } = require('../services/socket');
+const { verifySessionOwnership } = require('../utils/sessionGuard');
 
 /**
- * Helper to ensure session socket is alive and connected
+ * Helper to ensure session socket is alive, connected, and belongs to caller's API Key
  */
-function getActiveSocket(sessionId, res) {
+async function getActiveSocket(sessionId, req, res) {
+  // 1. Verify session ownership
+  const authCheck = await verifySessionOwnership(sessionId, req);
+  if (!authCheck.allowed) {
+    res.status(authCheck.status || 403).json({ success: false, message: authCheck.message });
+    return null;
+  }
+
   const sock = getSessionSocket(sessionId);
   if (!sock) {
     res.status(400).json({ success: false, message: `Session "${sessionId}" is not active or not initialized.` });
@@ -73,7 +81,7 @@ async function sendText(req, res) {
     return res.status(400).json({ success: false, message: 'sessionId, to, and message are required.' });
   }
 
-  const sock = getActiveSocket(sessionId, res);
+  const sock = await getActiveSocket(sessionId, req, res);
   if (!sock) return;
 
   const targetJid = formatToWhatsAppJid(to);
@@ -111,7 +119,7 @@ async function sendImage(req, res) {
     return res.status(400).json({ success: false, message: 'sessionId and to are required.' });
   }
 
-  const sock = getActiveSocket(sessionId, res);
+  const sock = await getActiveSocket(sessionId, req, res);
   if (!sock) {
     if (req.file) cleanupTempFile(req.file.path);
     return;
@@ -159,7 +167,7 @@ async function sendDocument(req, res) {
     return res.status(400).json({ success: false, message: 'sessionId and to are required.' });
   }
 
-  const sock = getActiveSocket(sessionId, res);
+  const sock = await getActiveSocket(sessionId, req, res);
   if (!sock) {
     if (req.file) cleanupTempFile(req.file.path);
     return;
@@ -209,7 +217,7 @@ async function sendAudio(req, res) {
     return res.status(400).json({ success: false, message: 'sessionId and to are required.' });
   }
 
-  const sock = getActiveSocket(sessionId, res);
+  const sock = await getActiveSocket(sessionId, req, res);
   if (!sock) {
     if (req.file) cleanupTempFile(req.file.path);
     return;
@@ -257,7 +265,7 @@ async function sendVideo(req, res) {
     return res.status(400).json({ success: false, message: 'sessionId and to are required.' });
   }
 
-  const sock = getActiveSocket(sessionId, res);
+  const sock = await getActiveSocket(sessionId, req, res);
   if (!sock) {
     if (req.file) cleanupTempFile(req.file.path);
     return;
@@ -304,7 +312,7 @@ async function sendLocation(req, res) {
     return res.status(400).json({ success: false, message: 'sessionId, to, latitude, and longitude are required.' });
   }
 
-  const sock = getActiveSocket(sessionId, res);
+  const sock = await getActiveSocket(sessionId, req, res);
   if (!sock) return;
 
   const targetJid = formatToWhatsAppJid(to);
@@ -343,7 +351,7 @@ async function sendContact(req, res) {
     return res.status(400).json({ success: false, message: 'sessionId, to, contactName, and contactPhone are required.' });
   }
 
-  const sock = getActiveSocket(sessionId, res);
+  const sock = await getActiveSocket(sessionId, req, res);
   if (!sock) return;
 
   const targetJid = formatToWhatsAppJid(to);
@@ -384,7 +392,7 @@ async function sendContact(req, res) {
 async function checkNumber(req, res) {
   const { sessionId, phone } = req.params;
 
-  const sock = getActiveSocket(sessionId, res);
+  const sock = await getActiveSocket(sessionId, req, res);
   if (!sock) return;
 
   try {
