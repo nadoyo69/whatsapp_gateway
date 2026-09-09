@@ -44,16 +44,30 @@
           </svg>
         </button>
 
-        <!-- Export CSV Button -->
-        <button
-          @click="exportCurrentTabCsv"
-          class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-emerald-500/30 text-xs font-semibold transition flex items-center gap-1.5 shadow"
-        >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          Export CSV
-        </button>
+        <!-- Export XLSX Dropdown / Buttons -->
+        <div class="flex items-center gap-1.5">
+          <button
+            @click="exportCurrentTabXlsx"
+            title="Download Excel spreadsheet for current tab"
+            class="px-3.5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-semibold transition flex items-center gap-1.5 shadow-lg shadow-emerald-700/20"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Export Tab (.xlsx)
+          </button>
+
+          <button
+            @click="exportFullWorkbookXlsx"
+            title="Export complete 3-sheet Excel workbook (Devices, API Keys, Audit Logs)"
+            class="px-3.5 py-2 rounded-xl bg-[#202c33] hover:bg-slate-700 text-emerald-400 border border-emerald-500/30 text-xs font-semibold transition flex items-center gap-1.5 shadow"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Full Book (.xlsx)
+          </button>
+        </div>
       </div>
     </div>
 
@@ -129,6 +143,89 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </div>
+      </div>
+    </div>
+
+    <!-- VISUAL TRAFFIC CHART SECTION -->
+    <div class="glass-panel p-6 rounded-3xl border border-[#2a3942] shadow-xl space-y-4">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#2a3942]">
+        <div>
+          <h3 class="text-base font-bold text-white flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+            WhatsApp Message Traffic Analytics
+          </h3>
+          <p class="text-xs text-slate-400 mt-0.5">
+            Incoming vs Outgoing message volume comparison across active WhatsApp sessions
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <!-- Chart Mode Switcher -->
+          <div class="flex items-center bg-[#202c33] p-1 rounded-xl border border-[#2a3942] text-xs">
+            <button
+              @click="setChartMode('sessions')"
+              :class="[
+                chartMode === 'sessions'
+                  ? 'bg-emerald-600 text-white font-bold shadow'
+                  : 'text-slate-400 hover:text-slate-200'
+              ]"
+              class="px-3 py-1.5 rounded-lg transition flex items-center gap-1.5"
+            >
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+              Per Session (Bar)
+            </button>
+            <button
+              @click="setChartMode('timeline')"
+              :class="[
+                chartMode === 'timeline'
+                  ? 'bg-cyan-600 text-white font-bold shadow'
+                  : 'text-slate-400 hover:text-slate-200'
+              ]"
+              class="px-3 py-1.5 rounded-lg transition flex items-center gap-1.5"
+            >
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
+              Daily Trend (Line)
+            </button>
+          </div>
+
+          <!-- Session Filter for Timeline -->
+          <div v-if="chartMode === 'timeline'" class="flex items-center gap-2">
+            <select
+              v-model="selectedTimelineSession"
+              @change="fetchTrafficChart"
+              class="px-3 py-1.5 bg-[#202c33] border border-[#2a3942] rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500"
+            >
+              <option value="all">All Sessions Combined</option>
+              <option v-for="s in deviceReports" :key="s.sessionId" :value="s.sessionId">
+                {{ s.name }} ({{ s.sessionId }})
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chart Legend & Status -->
+      <div class="flex items-center justify-between text-xs text-slate-400 px-1">
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-1.5">
+            <span class="w-3 h-3 rounded bg-emerald-500"></span>
+            <span class="text-white font-medium">Outgoing (Sent)</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="w-3 h-3 rounded bg-cyan-500"></span>
+            <span class="text-white font-medium">Incoming (Received)</span>
+          </div>
+        </div>
+        <span class="text-[11px] text-slate-500">Auto-synced with MongoDB message records</span>
+      </div>
+
+      <!-- Chart Canvas Wrapper -->
+      <div class="relative h-72 w-full">
+        <canvas ref="chartCanvas"></canvas>
       </div>
     </div>
 
@@ -579,7 +676,9 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, nextTick } from 'vue';
+import * as XLSX from 'xlsx';
+import Chart from 'chart.js/auto';
 import api from '../services/api';
 
 const loading = ref(false);
@@ -601,6 +700,16 @@ const auditLogs = ref([]);
 const deviceSearch = ref('');
 const apiKeySearch = ref('');
 const logStatusFilter = ref('');
+
+// Chart states
+const chartCanvas = ref(null);
+let chartInstance = null;
+const chartMode = ref('sessions'); // 'sessions' | 'timeline'
+const selectedTimelineSession = ref('all');
+const trafficData = ref({
+  sessionsComparison: [],
+  timeline: []
+});
 
 const logPagination = ref({
   page: 1,
@@ -683,6 +792,191 @@ const fetchRecentLogs = async () => {
   }
 };
 
+// Fetch Traffic Chart Data
+const fetchTrafficChart = async () => {
+  try {
+    const url = `/reports/chart?range=${selectedRange.value}&sessionId=${selectedTimelineSession.value}`;
+    const res = await api.get(url);
+    if (res.data.success) {
+      trafficData.value = res.data.data;
+      renderChart();
+    }
+  } catch (err) {
+    console.error('Failed to fetch traffic chart:', err);
+  }
+};
+
+const setChartMode = (mode) => {
+  chartMode.value = mode;
+  renderChart();
+};
+
+const renderChart = () => {
+  nextTick(() => {
+    if (!chartCanvas.value) return;
+
+    if (chartInstance) {
+      chartInstance.destroy();
+      chartInstance = null;
+    }
+
+    const ctx = chartCanvas.value.getContext('2d');
+
+    if (chartMode.value === 'sessions') {
+      const labels = trafficData.value.sessionsComparison.map(s => s.name || s.sessionId);
+      const sentData = trafficData.value.sessionsComparison.map(s => s.sent || 0);
+      const receivedData = trafficData.value.sessionsComparison.map(s => s.received || 0);
+
+      chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels.length > 0 ? labels : ['No Devices'],
+          datasets: [
+            {
+              label: 'Outgoing (Sent)',
+              data: sentData.length > 0 ? sentData : [0],
+              backgroundColor: 'rgba(16, 185, 129, 0.85)',
+              borderColor: '#10b981',
+              borderWidth: 1,
+              borderRadius: 6,
+              barPercentage: 0.6
+            },
+            {
+              label: 'Incoming (Received)',
+              data: receivedData.length > 0 ? receivedData : [0],
+              backgroundColor: 'rgba(6, 182, 212, 0.85)',
+              borderColor: '#06b6d4',
+              borderWidth: 1,
+              borderRadius: 6,
+              barPercentage: 0.6
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              backgroundColor: '#111b21',
+              borderColor: '#2a3942',
+              borderWidth: 1,
+              titleColor: '#fff',
+              bodyColor: '#cbd5e1',
+              padding: 10,
+              cornerRadius: 8
+            }
+          },
+          scales: {
+            x: {
+              grid: {
+                color: '#2a3942',
+                drawBorder: false
+              },
+              ticks: {
+                color: '#94a3b8',
+                font: { size: 11 }
+              }
+            },
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: '#2a3942',
+                drawBorder: false
+              },
+              ticks: {
+                color: '#94a3b8',
+                font: { size: 11 },
+                precision: 0
+              }
+            }
+          }
+        }
+      });
+    } else {
+      // Timeline Mode (Daily Trend)
+      const labels = trafficData.value.timeline.map(t => t.date);
+      const sentData = trafficData.value.timeline.map(t => t.sent || 0);
+      const receivedData = trafficData.value.timeline.map(t => t.received || 0);
+
+      chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels.length > 0 ? labels : ['No Data'],
+          datasets: [
+            {
+              label: 'Outgoing (Sent)',
+              data: sentData.length > 0 ? sentData : [0],
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.15)',
+              fill: true,
+              tension: 0.35,
+              pointBackgroundColor: '#10b981',
+              pointRadius: 4,
+              borderWidth: 2.5
+            },
+            {
+              label: 'Incoming (Received)',
+              data: receivedData.length > 0 ? receivedData : [0],
+              borderColor: '#06b6d4',
+              backgroundColor: 'rgba(6, 182, 212, 0.15)',
+              fill: true,
+              tension: 0.35,
+              pointBackgroundColor: '#06b6d4',
+              pointRadius: 4,
+              borderWidth: 2.5
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              backgroundColor: '#111b21',
+              borderColor: '#2a3942',
+              borderWidth: 1,
+              titleColor: '#fff',
+              bodyColor: '#cbd5e1',
+              padding: 10,
+              cornerRadius: 8
+            }
+          },
+          scales: {
+            x: {
+              grid: {
+                color: '#2a3942',
+                drawBorder: false
+              },
+              ticks: {
+                color: '#94a3b8',
+                font: { size: 11 }
+              }
+            },
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: '#2a3942',
+                drawBorder: false
+              },
+              ticks: {
+                color: '#94a3b8',
+                font: { size: 11 },
+                precision: 0
+              }
+            }
+          }
+        }
+      });
+    }
+  });
+};
+
 const changeLogPage = (newPage) => {
   logPagination.value.page = newPage;
   fetchRecentLogs();
@@ -699,7 +993,8 @@ const fetchAllReports = async () => {
     fetchSummary(),
     fetchDeviceReports(),
     fetchApiKeyReports(),
-    fetchRecentLogs()
+    fetchRecentLogs(),
+    fetchTrafficChart()
   ]);
   loading.value = false;
 };
@@ -729,63 +1024,127 @@ const formatTime = (d) => {
   });
 };
 
-// Export to CSV
-const exportCurrentTabCsv = () => {
-  let csvContent = '';
-  let filename = `gateway_report_${activeTab.value}_${selectedRange.value}.csv`;
+// ==================== EXPORT TO EXCEL (.XLSX) ====================
+
+/**
+ * Export currently active tab to .xlsx
+ */
+const exportCurrentTabXlsx = () => {
+  const wb = XLSX.utils.book_new();
 
   if (activeTab.value === 'devices') {
-    const headers = ['Device Name', 'Session ID', 'Phone Number', 'Status', 'Sent Messages', 'Received Messages', 'Delivery Rate', 'API Calls', 'Last Activity'];
-    const rows = filteredDevices.value.map(d => [
-      `"${d.name || ''}"`,
-      `"${d.sessionId || ''}"`,
-      `"${d.phoneNumber || ''}"`,
+    const data = [
+      ['Device Name', 'Session ID', 'Phone Number', 'Status', 'Outgoing (Sent)', 'Incoming (Received)', 'Delivery Rate', 'API Calls', 'Last Activity'],
+      ...filteredDevices.value.map(d => [
+        d.name || '',
+        d.sessionId || '',
+        d.phoneNumber ? '+' + d.phoneNumber : '-',
+        d.status,
+        d.messages?.sent || 0,
+        d.messages?.received || 0,
+        d.messages?.deliveryRate || '100%',
+        d.apiCalls || 0,
+        d.lastActivity ? formatDate(d.lastActivity) : 'No data'
+      ])
+    ];
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    XLSX.utils.book_append_sheet(wb, ws, 'Devices Usage');
+    XLSX.writeFile(wb, `whatsapp_devices_report_${selectedRange.value}.xlsx`);
+  } else if (activeTab.value === 'api-keys') {
+    const data = [
+      ['Key Name / Application', 'Token Preview', 'Owner', 'Total Hits', 'Success Rate', 'Client Errors (4xx)', 'Server Errors (5xx)', 'Avg Latency (ms)', 'Last Request'],
+      ...filteredApiKeys.value.map(k => [
+        k.name || '',
+        k.tokenPreview || '',
+        k.owner || '',
+        k.totalRequests || 0,
+        k.successRate || '100%',
+        k.clientErrors || 0,
+        k.serverErrors || 0,
+        k.avgLatencyMs || 0,
+        k.lastRequestAt ? formatDate(k.lastRequestAt) : 'Never'
+      ])
+    ];
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    XLSX.utils.book_append_sheet(wb, ws, 'API Keys Usage');
+    XLSX.writeFile(wb, `whatsapp_apikeys_report_${selectedRange.value}.xlsx`);
+  } else {
+    const data = [
+      ['Timestamp', 'Method', 'Endpoint', 'Status Code', 'Token Name', 'Target Device', 'Latency (ms)', 'Caller IP'],
+      ...auditLogs.value.map(l => [
+        formatTime(l.created_at),
+        l.method,
+        l.endpoint,
+        l.status_code,
+        l.token_name || 'Dashboard (JWT)',
+        l.device_name || l.session_id || '-',
+        l.response_time_ms || 0,
+        l.ip_address || '127.0.0.1'
+      ])
+    ];
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    XLSX.utils.book_append_sheet(wb, ws, 'Audit Logs');
+    XLSX.writeFile(wb, `whatsapp_audit_logs_${selectedRange.value}.xlsx`);
+  }
+};
+
+/**
+ * Export Full 3-sheet Excel Workbook (.xlsx)
+ */
+const exportFullWorkbookXlsx = () => {
+  const wb = XLSX.utils.book_new();
+
+  // Sheet 1: Devices
+  const devicesData = [
+    ['Device Name', 'Session ID', 'Phone Number', 'Status', 'Outgoing (Sent)', 'Incoming (Received)', 'Delivery Rate', 'API Calls', 'Last Activity'],
+    ...deviceReports.value.map(d => [
+      d.name || '',
+      d.sessionId || '',
+      d.phoneNumber ? '+' + d.phoneNumber : '-',
       d.status,
       d.messages?.sent || 0,
       d.messages?.received || 0,
-      `"${d.messages?.deliveryRate || '100%'}"`,
+      d.messages?.deliveryRate || '100%',
       d.apiCalls || 0,
-      `"${d.lastActivity || ''}"`
-    ]);
-    csvContent = [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
-  } else if (activeTab.value === 'api-keys') {
-    const headers = ['Key Name', 'Token Preview', 'Owner', 'Total Hits', 'Success Rate', '4xx Errors', '5xx Errors', 'Avg Latency (ms)', 'Last Request'];
-    const rows = filteredApiKeys.value.map(k => [
-      `"${k.name || ''}"`,
-      `"${k.tokenPreview || ''}"`,
-      `"${k.owner || ''}"`,
-      k.totalRequests,
-      `"${k.successRate}"`,
-      k.clientErrors,
-      k.serverErrors,
-      k.avgLatencyMs,
-      `"${k.lastRequestAt || ''}"`
-    ]);
-    csvContent = [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
-  } else {
-    const headers = ['Timestamp', 'Method', 'Endpoint', 'Status Code', 'Token Name', 'Device', 'Latency (ms)', 'IP Address'];
-    const rows = auditLogs.value.map(l => [
-      `"${l.created_at}"`,
-      l.method,
-      `"${l.endpoint}"`,
-      l.status_code,
-      `"${l.token_name || 'Dashboard'}"`,
-      `"${l.device_name || l.session_id || ''}"`,
-      l.response_time_ms,
-      `"${l.ip_address || ''}"`
-    ]);
-    csvContent = [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
-  }
+      d.lastActivity ? formatDate(d.lastActivity) : 'No data'
+    ])
+  ];
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(devicesData), 'WhatsApp Devices');
 
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
-  const url = URL.createObjectURL(blob);
-  link.setAttribute('href', url);
-  link.setAttribute('download', filename);
-  link.style.visibility = 'hidden';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  // Sheet 2: API Keys
+  const keysData = [
+    ['Key Name / Application', 'Token Preview', 'Owner', 'Total Hits', 'Success Rate', 'Client Errors (4xx)', 'Server Errors (5xx)', 'Avg Latency (ms)', 'Last Request'],
+    ...apiKeyReports.value.map(k => [
+      k.name || '',
+      k.tokenPreview || '',
+      k.owner || '',
+      k.totalRequests || 0,
+      k.successRate || '100%',
+      k.clientErrors || 0,
+      k.serverErrors || 0,
+      k.avgLatencyMs || 0,
+      k.lastRequestAt ? formatDate(k.lastRequestAt) : 'Never'
+    ])
+  ];
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(keysData), 'API Keys');
+
+  // Sheet 3: Audit Logs
+  const logsData = [
+    ['Timestamp', 'Method', 'Endpoint', 'Status Code', 'Token Name', 'Target Device', 'Latency (ms)', 'Caller IP'],
+    ...auditLogs.value.map(l => [
+      formatTime(l.created_at),
+      l.method,
+      l.endpoint,
+      l.status_code,
+      l.token_name || 'Dashboard (JWT)',
+      l.device_name || l.session_id || '-',
+      l.response_time_ms || 0,
+      l.ip_address || '127.0.0.1'
+    ])
+  ];
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(logsData), 'Recent Audit Logs');
+
+  XLSX.writeFile(wb, `whatsapp_gateway_full_analytics_${selectedRange.value}.xlsx`);
 };
 
 onMounted(() => {

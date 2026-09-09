@@ -426,9 +426,95 @@ async function getRecentLogs(req, res) {
   }
 }
 
+/**
+ * 5. Traffic Chart Analytics (Incoming vs Outgoing per Session & Daily Timeline)
+ */
+async function getTrafficChart(req, res) {
+  try {
+    const { range = '7d', sessionId = 'all' } = req.query;
+    const startDate = getStartDate(range);
+
+    // 1. Get all devices for labeling
+    const devicesRes = await pool.query('SELECT session_id, name FROM devices ORDER BY name ASC');
+
+    // 2. Build match filter for MongoDB
+    const matchFilter = {};
+    if (startDate) {
+      matchFilter.timestamp = { $gte: startDate };
+    }
+    if (sessionId && sessionId !== 'all') {
+      matchFilter.session_id = sessionId;
+    }
+
+    // 3. Per-session incoming vs outgoing comparison
+    const sessionAgg = await Message.aggregate([
+      { $match: startDate ? { timestamp: { $gte: startDate } } : {} },
+      {
+        $group: {
+          _id: '$session_id',
+          sent: { $sum: { $cond: [{ $eq: ['$from_me', true] }, 1, 0] } },
+          received: { $sum: { $cond: [{ $eq: ['$from_me', false] }, 1, 0] } },
+          total: { $sum: 1 }
+        }
+      }
+    ]);
+
+    const sessionStatsMap = new Map();
+    sessionAgg.forEach(s => sessionStatsMap.set(s._id, s));
+
+    const sessionsComparison = devicesRes.rows.map(d => {
+      const stats = sessionStatsMap.get(d.session_id) || { sent: 0, received: 0, total: 0 };
+      return {
+        sessionId: d.session_id,
+        name: d.name,
+        sent: stats.sent,
+        received: stats.received,
+        total: stats.total
+      };
+    });
+
+    // 4. Daily timeline of incoming vs outgoing
+    const timelineAgg = await Message.aggregate([
+      { $match: matchFilter },
+      {
+        $group: {
+          _id: {
+            date: { $dateToString: { format: '%Y-%m-%d', date: '$timestamp' } }
+          },
+          sent: { $sum: { $cond: [{ $eq: ['$from_me', true] }, 1, 0] } },
+          received: { $sum: { $cond: [{ $eq: ['$from_me', false] }, 1, 0] } },
+          total: { $sum: 1 }
+        }
+      },
+      { $sort: { '_id.date': 1 } }
+    ]);
+
+    const timeline = timelineAgg.map(t => ({
+      date: t._id.date,
+      sent: t.sent,
+      received: t.received,
+      total: t.total
+    }));
+
+    return res.json({
+      success: true,
+      range,
+      sessionId,
+      data: {
+        sessionsComparison,
+        timeline
+      }
+    });
+  } catch (err) {
+    console.error('[getTrafficChart error]', err);
+    return res.status(500).json({ success: false, message: 'Failed to fetch traffic chart data', error: err.message });
+  }
+}
+
 module.exports = {
   getSummary,
   getDeviceReports,
   getApiKeyReports,
-  getRecentLogs
+  getRecentLogs,
+  getTrafficChart
 };
