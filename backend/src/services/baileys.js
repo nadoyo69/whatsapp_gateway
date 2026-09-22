@@ -17,6 +17,7 @@ const Chat = require('../models/mongo/Chat');
 const { emitToSession, emitGlobal } = require('./socket');
 const { dispatchWebhook } = require('./webhook');
 const { formatToWhatsAppJid, extractPhoneFromJid, extractMessageContent } = require('../utils/format');
+const { shouldStoreMessages, shouldDownloadMedia } = require('../utils/devicePolicy');
 
 const sessions = new Map();
 const qrCodes = new Map();
@@ -182,60 +183,69 @@ async function initSession(sessionId, options = {}) {
           const senderName = msg.pushName || '';
           const parsed = extractMessageContent(msg);
 
-          // 1. Save message to MongoDB
-          const messageDoc = await Message.create({
-            session_id: sessionId,
-            message_id: messageId,
-            remote_jid: remoteJid,
-            from_me: fromMe,
-            sender_name: senderName,
-            message_type: parsed.type,
-            text: parsed.text || '',
-            media_mimetype: parsed.mimetype,
-            media_filename: parsed.filename,
-            status: fromMe ? 'sent' : 'delivered',
-            raw_message: msg,
-            timestamp: new Date(msg.messageTimestamp ? Number(msg.messageTimestamp) * 1000 : Date.now())
-          });
-
-          // 2. Upsert Chat record in MongoDB
+          // Device untuk sesi ini (dipakai untuk keputusan simpan/unduh); di-cache per-pesan
+          // agar konsisten dengan pemakaian auto_read di bawah, tanpa query tambahan.
+          const policyDevice = await getDeviceBySessionId(sessionId);
+          const messageTimestamp = new Date(msg.messageTimestamp ? Number(msg.messageTimestamp) * 1000 : Date.now());
           const isGroup = remoteJid.endsWith('@g.us');
-          await Chat.findOneAndUpdate(
-            { session_id: sessionId, jid: remoteJid },
-            {
-              $set: {
-                name: senderName || extractPhoneFromJid(remoteJid),
-                phone: extractPhoneFromJid(remoteJid),
-                is_group: isGroup,
-                last_message: {
-                  text: parsed.text || `[${parsed.type}]`,
-                  from_me: fromMe,
-                  type: parsed.type,
-                  timestamp: messageDoc.timestamp
+
+          // 1. Simpan pesan ke MongoDB — dilewati bila store_messages = false (opt-out per sesi).
+          //    Isi keuangan tenant UangRapi tidak boleh menetap di gateway pihak ketiga ini.
+          let messageDoc = null;
+          if (shouldStoreMessages(policyDevice)) {
+            messageDoc = await Message.create({
+              session_id: sessionId,
+              message_id: messageId,
+              remote_jid: remoteJid,
+              from_me: fromMe,
+              sender_name: senderName,
+              message_type: parsed.type,
+              text: parsed.text || '',
+              media_mimetype: parsed.mimetype,
+              media_filename: parsed.filename,
+              status: fromMe ? 'sent' : 'delivered',
+              raw_message: msg,
+              timestamp: messageTimestamp
+            });
+
+            // 2. Upsert Chat record — hanya bila pesan memang disimpan (last_message memuat teks).
+            await Chat.findOneAndUpdate(
+              { session_id: sessionId, jid: remoteJid },
+              {
+                $set: {
+                  name: senderName || extractPhoneFromJid(remoteJid),
+                  phone: extractPhoneFromJid(remoteJid),
+                  is_group: isGroup,
+                  last_message: {
+                    text: parsed.text || `[${parsed.type}]`,
+                    from_me: fromMe,
+                    type: parsed.type,
+                    timestamp: messageTimestamp
+                  },
+                  updated_at: new Date()
                 },
-                updated_at: new Date()
+                $inc: { unread_count: fromMe ? 0 : 1 }
               },
-              $inc: { unread_count: fromMe ? 0 : 1 }
-            },
-            { upsert: true, new: true }
-          );
+              { upsert: true, new: true }
+            );
+          }
 
           // 3. Emit real-time message to frontend via Socket.IO
           emitToSession(sessionId, 'message.new', {
-            id: messageDoc._id,
+            id: messageDoc?._id || null,
             messageId,
             remoteJid,
             fromMe,
             senderName,
             type: parsed.type,
             text: parsed.text,
-            timestamp: messageDoc.timestamp
+            timestamp: messageTimestamp
           });
 
           // 4. Dispatch to Webhook endpoint
           if (!fromMe) {
             let imageBase64 = null;
-            if (parsed.type === 'image') {
+            if (parsed.type === 'image' && shouldDownloadMedia(policyDevice)) {
               try {
                 const buffer = await downloadMediaMessage(
                   msg,
@@ -273,12 +283,11 @@ async function initSession(sessionId, options = {}) {
               image_base64: imageBase64,
               location: parsed.latitude ? { lat: parsed.latitude, lng: parsed.longitude, name: parsed.name, address: parsed.address } : null,
               contact: parsed.displayName ? { name: parsed.displayName, vcard: parsed.vcard } : null,
-              timestamp: messageDoc.timestamp
+              timestamp: messageTimestamp
             });
 
             // Auto-read if configured
-            const device = await getDeviceBySessionId(sessionId);
-            if (device?.auto_read) {
+            if (policyDevice?.auto_read) {
               await sock.readMessages([msg.key]);
             }
           }
@@ -475,7 +484,11 @@ async function getDeviceBySessionId(sessionId) {
 async function dispatchDeviceWebhook(sessionId, event, data) {
   const device = await getDeviceBySessionId(sessionId);
   if (device?.webhook_url) {
-    dispatchWebhook(sessionId, device.webhook_url, device.webhook_secret, event, data);
+    // Sengaja tanpa `await`: pemanggil (messages.upsert dkk.) tidak boleh menunggu
+    // retry multi-menit. Kegagalan tercatat di WebhookLog, tidak pernah melempar ke pemanggil.
+    dispatchWebhook(sessionId, device.webhook_url, device.webhook_secret, event, data, {
+      retry: !!device.webhook_retry,
+    });
   }
 }
 

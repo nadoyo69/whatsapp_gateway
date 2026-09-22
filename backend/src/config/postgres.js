@@ -50,6 +50,9 @@ async function initPostgres() {
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
       ALTER TABLE devices ADD COLUMN IF NOT EXISTS api_token_id INTEGER REFERENCES api_tokens(id) ON DELETE SET NULL;
+      ALTER TABLE devices ADD COLUMN IF NOT EXISTS store_messages BOOLEAN NOT NULL DEFAULT TRUE;
+      ALTER TABLE devices ADD COLUMN IF NOT EXISTS download_media BOOLEAN NOT NULL DEFAULT TRUE;
+      ALTER TABLE devices ADD COLUMN IF NOT EXISTS webhook_retry BOOLEAN NOT NULL DEFAULT FALSE;
       CREATE INDEX IF NOT EXISTS idx_devices_api_token ON devices(api_token_id);
     `);
 
