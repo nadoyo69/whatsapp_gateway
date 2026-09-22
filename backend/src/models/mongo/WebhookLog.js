@@ -11,6 +11,7 @@ const webhookLogSchema = new mongoose.Schema(
     error_message: { type: String },
     execution_time_ms: { type: Number },
     success: { type: Boolean, default: false, index: true },
+    attempt: { type: Number, default: 1 },
     created_at: { type: Date, default: Date.now, index: true }
   },
   { timestamps: true }
