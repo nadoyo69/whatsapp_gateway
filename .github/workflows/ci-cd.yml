@@ -73,6 +73,8 @@ jobs:
 
             REPO_URL="git@github.com:nadoyo69/whatsapp_gateway.git"
             export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=accept-new -o BatchMode=yes"
+            # Bila ada kunci khusus server (didaftarkan di akun GitHub), pakai itu saja; kalau tidak, kunci bawaan ssh.
+            [ -f "$HOME/.ssh/id_ed25519_nadoyo" ] && export GIT_SSH_COMMAND="ssh -i $HOME/.ssh/id_ed25519_nadoyo -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new -o BatchMode=yes"
 
             if [ ! -d ".git" ]; then
               echo "Initializing git repository..."
