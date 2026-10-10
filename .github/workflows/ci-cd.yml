@@ -71,7 +71,8 @@ jobs:
             cd "${{ secrets.SERVER_PATH }}"
             echo "Active dir: $(pwd)"
 
-            REPO_URL="https://nadoyo69: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@github.com/nadoyo69/whatsapp_gateway.git"
+            REPO_URL="git@github.com:nadoyo69/whatsapp_gateway.git"
+            export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=accept-new -o BatchMode=yes"
 
             if [ ! -d ".git" ]; then
               echo "Initializing git repository..."
@@ -81,7 +82,7 @@ jobs:
 
             echo "Fetching and checking out latest code..."
             git remote set-url origin "$REPO_URL"
-            git fetch origin main
+            git fetch origin main || { echo "GAGAL fetch via SSH: pastikan kunci SSH server terdaftar di GitHub (akun nadoyo69 atau deploy key repo whatsapp_gateway)"; exit 1; }
             git checkout -f -B main origin/main
             git reset --hard origin/main
 
