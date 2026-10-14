@@ -7,8 +7,8 @@ const { pool } = require('../config/postgres');
  * 1. Admin via Dashboard JWT (req.user): full access to all sessions.
  * 2. API Key (req.apiKey):
  *    - If device has api_token_id set, it MUST match req.apiKey.id.
- *    - If device has api_token_id === null (global/legacy session, e.g. bukunadoyo_1), access is allowed
- *      so existing integrations like accounting_private do not break.
+ *    - If device has api_token_id === null (global/legacy session), access is allowed
+ *      so existing integrations do not break.
  *    - If device does not exist: returns 404.
  *
  * @param {string} sessionId
@@ -48,7 +48,7 @@ async function verifySessionOwnership(sessionId, req) {
       }
     }
 
-    // Otherwise it's global / legacy device (e.g. bukunadoyo_1), allowed
+    // Otherwise it's global / legacy device, allowed
     return { allowed: true, device };
   }
 

@@ -1,7 +1,7 @@
 /**
  * Kebijakan penyimpanan pesan & pengunduhan media, dibaca dari baris `devices`.
  * PRINSIP: hanya `false` eksplisit yang mematikan fitur. `undefined`/`null`/tanpa kolom
- * (baris device lama sebelum kolom ini ada, termasuk bukunadoyo_1) SELALU berperilaku lama.
+ * (baris device lama sebelum kolom ini ada, termasuk device legacy) SELALU berperilaku lama.
  */
 
 function shouldStoreMessages(device) {

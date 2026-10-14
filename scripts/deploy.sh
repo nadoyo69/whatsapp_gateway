@@ -1,7 +1,6 @@
 ﻿#!/usr/bin/env bash
 # ==============================================================================
 # Manual Server Deployment Script - WhatsApp Gateway
-# Domain: whatsapp.nexforgex.my.id & whatsapp-api.nexforgex.my.id
 # ==============================================================================
 set -e
 
@@ -18,9 +17,9 @@ fi
 
 # 2. Cek file .env
 if [ ! -f .env ]; then
-  echo "⚠️ File .env tidak ditemukan. Menyalin dari .env.example..."
-  cp .env.example .env
-  echo "👉 Silakan periksa dan sesuaikan variabel di .env bila perlu."
+  echo "❌ File .env tidak ditemukan."
+  echo "👉 Jalankan: cp .env.example .env, ganti semua nilai CHANGE_ME, lalu ulangi deploy."
+  exit 1
 fi
 
 # 3. Pull kode terbaru jika dalam repositori git

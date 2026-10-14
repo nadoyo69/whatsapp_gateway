@@ -1,8 +1,11 @@
 const mongoose = require('mongoose');
+const { requireEnv } = require('./secrets');
 
 async function initMongo() {
-  const mongoUri = process.env.MONGO_URI || `mongodb://${process.env.MONGO_USER || 'wa_admin'}:${process.env.MONGO_PASSWORD || 'wa_secret_123'}@${process.env.MONGO_HOST || 'localhost'}:${process.env.MONGO_PORT || 27017}/${process.env.MONGO_DB || 'wa_gateway_logs'}?authSource=admin`;
-  
+  // Existing deployments keep their MongoDB volume (and its password), so the
+  // password is required but not checked against the published defaults.
+  const mongoUri = process.env.MONGO_URI || `mongodb://${encodeURIComponent(process.env.MONGO_USER || 'wa_admin')}:${encodeURIComponent(requireEnv('MONGO_PASSWORD', { rejectPublished: false }))}@${process.env.MONGO_HOST || 'localhost'}:${process.env.MONGO_PORT || 27017}/${process.env.MONGO_DB || 'wa_gateway_logs'}?authSource=admin`;
+
   try {
     mongoose.set('strictQuery', false);
     await mongoose.connect(mongoUri, {

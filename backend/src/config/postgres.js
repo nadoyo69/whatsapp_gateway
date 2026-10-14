@@ -1,8 +1,11 @@
 const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
+const { requireEnv } = require('./secrets');
 
+// Existing deployments keep their PostgreSQL volume (and its password), so the
+// password is required but not checked against the published defaults.
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || `postgresql://${process.env.DB_USER || 'wa_admin'}:${process.env.DB_PASSWORD || 'wa_secret_123'}@${process.env.DB_HOST || 'localhost'}:${process.env.DB_PORT || 5432}/${process.env.DB_NAME || 'wa_gateway_db'}`
+  connectionString: process.env.DATABASE_URL || `postgresql://${encodeURIComponent(process.env.DB_USER || 'wa_admin')}:${encodeURIComponent(requireEnv('DB_PASSWORD', { rejectPublished: false }))}@${process.env.DB_HOST || 'localhost'}:${process.env.DB_PORT || 5432}/${process.env.DB_NAME || 'wa_gateway_db'}`
 });
 
 async function initPostgres() {
@@ -87,7 +90,7 @@ async function initPostgres() {
     const userRes = await client.query('SELECT COUNT(*) FROM users');
     if (parseInt(userRes.rows[0].count) === 0) {
       const defaultUsername = process.env.ADMIN_DEFAULT_USER || 'admin';
-      const defaultPassword = process.env.ADMIN_DEFAULT_PASS || 'admin123';
+      const defaultPassword = requireEnv('ADMIN_DEFAULT_PASS', { minLength: 8 });
       const defaultEmail = process.env.ADMIN_DEFAULT_EMAIL || 'admin@wagenerator.local';
       const hashedPassword = await bcrypt.hash(defaultPassword, 10);
       
@@ -96,14 +99,14 @@ async function initPostgres() {
         [defaultUsername, defaultEmail, hashedPassword, 'admin']
       );
 
-      // Seed default API Token for development/initial use
-      const defaultToken = process.env.DEFAULT_API_TOKEN || 'wa_secret_token_default_key_2026';
+      // Seed the initial master API token
+      const defaultToken = requireEnv('DEFAULT_API_TOKEN', { minLength: 24 });
       await client.query(
         'INSERT INTO api_tokens (name, token, user_id) VALUES ($1, $2, $3)',
         ['Default Master Key', defaultToken, insertAdmin.rows[0].id]
       );
       
-      console.log(`[PostgreSQL] Initialized with default admin: "${defaultUsername}" and token: "${defaultToken}"`);
+      console.log(`[PostgreSQL] Initialized with default admin: "${defaultUsername}" and a master API token.`);
     } else {
       console.log('[PostgreSQL] Database tables initialized successfully.');
     }

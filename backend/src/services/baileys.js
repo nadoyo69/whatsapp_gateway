@@ -190,7 +190,7 @@ async function initSession(sessionId, options = {}) {
           const isGroup = remoteJid.endsWith('@g.us');
 
           // 1. Simpan pesan ke MongoDB — dilewati bila store_messages = false (opt-out per sesi).
-          //    Isi keuangan tenant UangRapi tidak boleh menetap di gateway pihak ketiga ini.
+          //    Berguna bila isi pesan tidak boleh menetap di gateway.
           let messageDoc = null;
           if (shouldStoreMessages(policyDevice)) {
             messageDoc = await Message.create({

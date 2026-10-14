@@ -23,7 +23,7 @@ fi
 DB_USER=${DB_USER:-wa_admin}
 DB_NAME=${DB_NAME:-wa_gateway_db}
 MONGO_USER=${MONGO_USER:-wa_admin}
-MONGO_PASSWORD=${MONGO_PASSWORD:-wa_secret_123}
+MONGO_PASSWORD=${MONGO_PASSWORD:?Set MONGO_PASSWORD in .env}
 MONGO_DB=${MONGO_DB:-wa_gateway_logs}
 
 # 1. Backup PostgreSQL

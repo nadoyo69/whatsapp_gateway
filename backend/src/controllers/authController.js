@@ -21,16 +21,7 @@ async function login(req, res) {
     }
 
     const user = result.rows[0];
-    let isMatch = await bcrypt.compare(password, user.password);
-
-    // Fallback: support configured ADMIN_DEFAULT_PASS or admin123 for default admin
-    const defaultUser = process.env.ADMIN_DEFAULT_USER || 'admin';
-    if (!isMatch && user.username === defaultUser) {
-      const defaultPass = process.env.ADMIN_DEFAULT_PASS;
-      if ((defaultPass && password === defaultPass) || password === 'admin123') {
-        isMatch = true;
-      }
-    }
+    const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
       return res.status(401).json({ success: false, message: 'Invalid username or password.' });
@@ -83,14 +74,7 @@ async function changePassword(req, res) {
     const result = await pool.query('SELECT * FROM users WHERE id = $1', [req.user.id]);
     const user = result.rows[0];
 
-    let isMatch = await bcrypt.compare(oldPassword, user.password);
-    const defaultUser = process.env.ADMIN_DEFAULT_USER || 'admin';
-    if (!isMatch && user.username === defaultUser) {
-      const defaultPass = process.env.ADMIN_DEFAULT_PASS;
-      if ((defaultPass && oldPassword === defaultPass) || oldPassword === 'admin123') {
-        isMatch = true;
-      }
-    }
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
 
     if (!isMatch) {
       return res.status(400).json({ success: false, message: 'Current password does not match.' });

@@ -10,7 +10,7 @@ test('device null/undefined: perilaku lama (simpan & unduh)', () => {
 });
 
 test('device tanpa kolom baru (mis. baris lama sebelum ALTER TABLE): perilaku lama', () => {
-  const legacyDevice = { session_id: 'bukunadoyo_1', webhook_url: 'https://x', auto_read: false };
+  const legacyDevice = { session_id: 'legacy_device_1', webhook_url: 'https://x', auto_read: false };
   assert.equal(shouldStoreMessages(legacyDevice), true);
   assert.equal(shouldDownloadMedia(legacyDevice), true);
 });
@@ -30,23 +30,23 @@ test('kolom di Postgres bisa balik sebagai null (bukan hanya undefined): tetap p
   assert.equal(shouldDownloadMedia({ download_media: null }), true);
 });
 
-test('bentuk baris device bukunadoyo_1 yang sesungguhnya (tanpa kolom baru): tidak berubah', () => {
-  // Meniru bentuk baris `devices` produksi accounting_private sebelum migrasi Rencana 2 berjalan.
-  const bukunadoyo1 = {
-    id: 1, session_id: 'bukunadoyo_1', name: 'BukuNadoyo Utama',
-    webhook_url: 'https://buku.nadoyo.my.id/api/webhook/whatsapp',
+test('bentuk baris device legacy_device_1 yang sesungguhnya (tanpa kolom baru): tidak berubah', () => {
+  // Meniru bentuk baris `devices` produksi sebelum migrasi Rencana 2 berjalan.
+  const legacyDevice = {
+    id: 1, session_id: 'legacy_device_1', name: 'Legacy Device',
+    webhook_url: 'https://app.example.com/api/webhook/whatsapp',
     webhook_secret: 'contoh-secret', auto_read: false, api_token_id: null,
   };
-  assert.equal(shouldStoreMessages(bukunadoyo1), true);
-  assert.equal(shouldDownloadMedia(bukunadoyo1), true);
+  assert.equal(shouldStoreMessages(legacyDevice), true);
+  assert.equal(shouldDownloadMedia(legacyDevice), true);
 });
 
-test('device UangRapi yang mematikan retensi & unduhan media', () => {
-  const uangrapiDevice = {
-    session_id: 'ur_11111111-2222-3333-4444-555555555555',
-    webhook_url: 'https://uangrapi.nexforgex.my.id/api/whatsapp/webhook',
+test('device yang mematikan retensi & unduhan media', () => {
+  const privacyDevice = {
+    session_id: 'tenant_11111111-2222-3333-4444-555555555555',
+    webhook_url: 'https://app.example.com/api/whatsapp/webhook',
     webhook_secret: 'rahasia-tenant', store_messages: false, download_media: false, webhook_retry: true,
   };
-  assert.equal(shouldStoreMessages(uangrapiDevice), false);
-  assert.equal(shouldDownloadMedia(uangrapiDevice), false);
+  assert.equal(shouldStoreMessages(privacyDevice), false);
+  assert.equal(shouldDownloadMedia(privacyDevice), false);
 });

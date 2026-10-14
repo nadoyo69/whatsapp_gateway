@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
 const { pool } = require('../config/postgres');
+const { requireEnv } = require('../config/secrets');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'wa_gateway_super_jwt_secret_key_2026';
+const JWT_SECRET = requireEnv('JWT_SECRET', { minLength: 32 });
 
 /**
  * Middleware for JWT Authentication (Admin Dashboard)
