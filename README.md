@@ -434,6 +434,8 @@ print(response.json())
 
 ## Development and tests
 
+Local development needs **Node.js 24 LTS** or newer, the same version the Docker images use.
+
 ```bash
 cd backend
 npm install
