@@ -1,4 +1,5 @@
 require('dotenv').config({ quiet: true });
+require('./config/network'); // must load before any outbound connection is made
 const http = require('http');
 const express = require('express');
 const cors = require('cors');
