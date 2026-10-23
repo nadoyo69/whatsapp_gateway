@@ -1,5 +1,5 @@
 <template>
-  <div class="flex min-h-screen bg-[#0b141a]">
+  <div class="flex min-h-screen bg-wa-dark">
     <!-- Sidebar -->
     <Sidebar />
 
@@ -9,7 +9,7 @@
       <main class="flex-1 p-8 overflow-y-auto">
         <RouterView />
       </main>
-      <footer class="h-12 border-t border-[#2a3942]/60 px-8 flex items-center justify-between text-xs text-slate-500 bg-[#111b21]/50">
+      <footer class="h-12 border-t border-wa-border/60 px-8 flex items-center justify-between text-xs text-slate-500 bg-wa-card/50">
         <div class="flex items-center gap-2">
           <span class="font-semibold text-slate-400">NexforgexGateway (NXG)</span>
           <span>•</span>
@@ -17,7 +17,7 @@
         </div>
         <div class="flex items-center gap-2">
           <span>Version</span>
-          <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono font-bold text-[11px]">V1.0.0</span>
+          <span class="px-2 py-0.5 rounded-sm bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono font-bold text-[11px]">V1.0.0</span>
         </div>
       </footer>
     </div>

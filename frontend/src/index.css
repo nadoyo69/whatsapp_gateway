@@ -1,17 +1,65 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-wa-50: #f0fdf4;
+  --color-wa-100: #dcfce7;
+  --color-wa-200: #bbf7d0;
+  --color-wa-300: #86efac;
+  --color-wa-400: #4ade80;
+  --color-wa-500: #22c55e;
+  --color-wa-600: #16a34a;
+  --color-wa-700: #15803d;
+  --color-wa-800: #166534;
+  --color-wa-900: #14532d;
+  --color-wa-dark: #0b141a;
+  --color-wa-card: #111b21;
+  --color-wa-panel: #202c33;
+  --color-wa-border: #2a3942;
+  --color-wa-primary: #25d366;
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
 
 :root {
   color-scheme: dark;
 }
 
-body {
-  margin: 0;
-  min-height: 100vh;
-  background-color: #0b141a;
-  color: #e9edef;
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+/*
+  Kept in the base layer so utility classes on <body> (text color, font) still win,
+  as they did before Tailwind CSS v4.
+*/
+@layer base {
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background-color: #0b141a;
+    color: #e9edef;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  /* Tailwind CSS v4 buttons use the default cursor; keep the pointer cursor from v3. */
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
 }
 
 /* Custom modern scrollbars */

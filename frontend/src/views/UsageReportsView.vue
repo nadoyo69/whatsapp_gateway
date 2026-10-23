@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-6 animate-fadeIn">
     <!-- Header & Controls -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-[#111b21] via-[#15242c] to-[#111b21] p-6 rounded-3xl border border-[#2a3942] shadow-xl">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-linear-to-r from-wa-card via-[#15242c] to-wa-card p-6 rounded-3xl border border-wa-border shadow-xl">
       <div>
         <div class="flex items-center gap-3">
           <h2 class="text-xl font-bold text-white">Usage & Analytics Reports</h2>
@@ -16,14 +16,14 @@
 
       <div class="flex flex-wrap items-center gap-2.5">
         <!-- Date Range Filter -->
-        <div class="flex items-center bg-[#202c33] p-1 rounded-xl border border-[#2a3942] text-xs">
+        <div class="flex items-center bg-wa-panel p-1 rounded-xl border border-wa-border text-xs">
           <button
             v-for="r in rangeOptions"
             :key="r.id"
             @click="setRange(r.id)"
             :class="[
               selectedRange === r.id
-                ? 'bg-emerald-600 text-white font-bold shadow'
+                ? 'bg-emerald-600 text-white font-bold shadow-sm'
                 : 'text-slate-400 hover:text-slate-200'
             ]"
             class="px-3 py-1.5 rounded-lg transition"
@@ -37,7 +37,7 @@
           @click="fetchAllReports"
           :disabled="loading"
           title="Refresh Data"
-          class="p-2.5 bg-[#202c33] hover:bg-slate-700 text-slate-300 border border-[#2a3942] rounded-xl text-xs transition disabled:opacity-50"
+          class="p-2.5 bg-wa-panel hover:bg-slate-700 text-slate-300 border border-wa-border rounded-xl text-xs transition disabled:opacity-50"
         >
           <svg class="w-4 h-4" :class="{ 'animate-spin': loading }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -60,7 +60,7 @@
           <button
             @click="exportFullWorkbookXlsx"
             title="Export complete 3-sheet Excel workbook (Devices, API Keys, Audit Logs)"
-            class="px-3.5 py-2 rounded-xl bg-[#202c33] hover:bg-slate-700 text-emerald-400 border border-emerald-500/30 text-xs font-semibold transition flex items-center gap-1.5 shadow"
+            class="px-3.5 py-2 rounded-xl bg-wa-panel hover:bg-slate-700 text-emerald-400 border border-emerald-500/30 text-xs font-semibold transition flex items-center gap-1.5 shadow-sm"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -74,7 +74,7 @@
     <!-- KPI Metric Stat Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <!-- Total Sent Messages -->
-      <div class="glass-panel p-5 rounded-2xl border border-[#2a3942] flex items-center justify-between">
+      <div class="glass-panel p-5 rounded-2xl border border-wa-border flex items-center justify-between">
         <div>
           <p class="text-xs font-medium text-slate-400">Total Outgoing (Sent)</p>
           <h3 class="text-2xl font-black text-emerald-400 mt-1">
@@ -92,7 +92,7 @@
       </div>
 
       <!-- Total Received Messages -->
-      <div class="glass-panel p-5 rounded-2xl border border-[#2a3942] flex items-center justify-between">
+      <div class="glass-panel p-5 rounded-2xl border border-wa-border flex items-center justify-between">
         <div>
           <p class="text-xs font-medium text-slate-400">Total Incoming (Received)</p>
           <h3 class="text-2xl font-black text-cyan-400 mt-1">
@@ -110,7 +110,7 @@
       </div>
 
       <!-- Total API Calls -->
-      <div class="glass-panel p-5 rounded-2xl border border-[#2a3942] flex items-center justify-between">
+      <div class="glass-panel p-5 rounded-2xl border border-wa-border flex items-center justify-between">
         <div>
           <p class="text-xs font-medium text-slate-400">Total API Hits</p>
           <h3 class="text-2xl font-black text-purple-400 mt-1">
@@ -128,7 +128,7 @@
       </div>
 
       <!-- Success Rate -->
-      <div class="glass-panel p-5 rounded-2xl border border-[#2a3942] flex items-center justify-between">
+      <div class="glass-panel p-5 rounded-2xl border border-wa-border flex items-center justify-between">
         <div>
           <p class="text-xs font-medium text-slate-400">API Success Rate</p>
           <h3 class="text-2xl font-black text-amber-400 mt-1">
@@ -147,8 +147,8 @@
     </div>
 
     <!-- VISUAL TRAFFIC CHART SECTION -->
-    <div class="glass-panel p-6 rounded-3xl border border-[#2a3942] shadow-xl space-y-4">
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#2a3942]">
+    <div class="glass-panel p-6 rounded-3xl border border-wa-border shadow-xl space-y-4">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-wa-border">
         <div>
           <h3 class="text-base font-bold text-white flex items-center gap-2">
             <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
@@ -161,12 +161,12 @@
 
         <div class="flex flex-wrap items-center gap-3">
           <!-- Chart Mode Switcher -->
-          <div class="flex items-center bg-[#202c33] p-1 rounded-xl border border-[#2a3942] text-xs">
+          <div class="flex items-center bg-wa-panel p-1 rounded-xl border border-wa-border text-xs">
             <button
               @click="setChartMode('sessions')"
               :class="[
                 chartMode === 'sessions'
-                  ? 'bg-emerald-600 text-white font-bold shadow'
+                  ? 'bg-emerald-600 text-white font-bold shadow-sm'
                   : 'text-slate-400 hover:text-slate-200'
               ]"
               class="px-3 py-1.5 rounded-lg transition flex items-center gap-1.5"
@@ -180,7 +180,7 @@
               @click="setChartMode('timeline')"
               :class="[
                 chartMode === 'timeline'
-                  ? 'bg-cyan-600 text-white font-bold shadow'
+                  ? 'bg-cyan-600 text-white font-bold shadow-sm'
                   : 'text-slate-400 hover:text-slate-200'
               ]"
               class="px-3 py-1.5 rounded-lg transition flex items-center gap-1.5"
@@ -197,7 +197,7 @@
             <select
               v-model="selectedTimelineSession"
               @change="fetchTrafficChart"
-              class="px-3 py-1.5 bg-[#202c33] border border-[#2a3942] rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500"
+              class="px-3 py-1.5 bg-wa-panel border border-wa-border rounded-xl text-xs text-white focus:outline-hidden focus:border-cyan-500"
             >
               <option value="all">All Sessions Combined</option>
               <option v-for="s in deviceReports" :key="s.sessionId" :value="s.sessionId">
@@ -212,11 +212,11 @@
       <div class="flex items-center justify-between text-xs text-slate-400 px-1">
         <div class="flex items-center gap-4">
           <div class="flex items-center gap-1.5">
-            <span class="w-3 h-3 rounded bg-emerald-500"></span>
+            <span class="w-3 h-3 rounded-sm bg-emerald-500"></span>
             <span class="text-white font-medium">Outgoing (Sent)</span>
           </div>
           <div class="flex items-center gap-1.5">
-            <span class="w-3 h-3 rounded bg-cyan-500"></span>
+            <span class="w-3 h-3 rounded-sm bg-cyan-500"></span>
             <span class="text-white font-medium">Incoming (Received)</span>
           </div>
         </div>
@@ -230,7 +230,7 @@
     </div>
 
     <!-- Tab Navigation -->
-    <div class="flex items-center border-b border-[#2a3942] gap-6">
+    <div class="flex items-center border-b border-wa-border gap-6">
       <button
         @click="activeTab = 'devices'"
         :class="[
@@ -281,8 +281,8 @@
 
     <!-- TAB 1: USAGE PER DEVICE -->
     <div v-if="activeTab === 'devices'" class="space-y-4">
-      <div class="glass-panel rounded-2xl border border-[#2a3942] overflow-hidden">
-        <div class="p-4 bg-[#202c33]/40 border-b border-[#2a3942] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div class="glass-panel rounded-2xl border border-wa-border overflow-hidden">
+        <div class="p-4 bg-wa-panel/40 border-b border-wa-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h3 class="text-sm font-bold text-white">Device Throughput Breakdown</h3>
             <p class="text-xs text-slate-400">Total incoming, outgoing, and message types processed by each WhatsApp session</p>
@@ -292,7 +292,7 @@
               v-model="deviceSearch"
               type="text"
               placeholder="Filter by device or number..."
-              class="w-full px-3.5 py-1.5 bg-[#202c33] border border-[#2a3942] rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+              class="w-full px-3.5 py-1.5 bg-wa-panel border border-wa-border rounded-xl text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-emerald-500"
             />
           </div>
         </div>
@@ -303,7 +303,7 @@
 
         <div v-else class="overflow-x-auto">
           <table class="w-full text-left text-xs">
-            <thead class="bg-[#202c33]/70 text-slate-400 uppercase font-semibold border-b border-[#2a3942]">
+            <thead class="bg-wa-panel/70 text-slate-400 uppercase font-semibold border-b border-wa-border">
               <tr>
                 <th class="px-5 py-3.5">Device / Session</th>
                 <th class="px-5 py-3.5">Status</th>
@@ -315,8 +315,8 @@
                 <th class="px-5 py-3.5">Last Activity</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-[#2a3942]/60">
-              <tr v-for="dev in filteredDevices" :key="dev.id" class="hover:bg-[#202c33]/40 transition">
+            <tbody class="divide-y divide-wa-border/60">
+              <tr v-for="dev in filteredDevices" :key="dev.id" class="hover:bg-wa-panel/40 transition">
                 <!-- Device Info -->
                 <td class="px-5 py-4">
                   <div class="font-bold text-white text-sm">{{ dev.name }}</div>
@@ -374,16 +374,16 @@
                 <!-- Types Breakdown -->
                 <td class="px-5 py-4">
                   <div class="flex flex-wrap gap-1 max-w-xs">
-                    <span v-if="dev.messages?.types?.text" class="px-1.5 py-0.5 rounded bg-slate-800 text-[10px] text-slate-300 font-mono">
+                    <span v-if="dev.messages?.types?.text" class="px-1.5 py-0.5 rounded-sm bg-slate-800 text-[10px] text-slate-300 font-mono">
                       Text: {{ dev.messages.types.text }}
                     </span>
-                    <span v-if="dev.messages?.types?.image" class="px-1.5 py-0.5 rounded bg-blue-900/40 text-[10px] text-blue-300 font-mono">
+                    <span v-if="dev.messages?.types?.image" class="px-1.5 py-0.5 rounded-sm bg-blue-900/40 text-[10px] text-blue-300 font-mono">
                       Image: {{ dev.messages.types.image }}
                     </span>
-                    <span v-if="dev.messages?.types?.document" class="px-1.5 py-0.5 rounded bg-amber-900/40 text-[10px] text-amber-300 font-mono">
+                    <span v-if="dev.messages?.types?.document" class="px-1.5 py-0.5 rounded-sm bg-amber-900/40 text-[10px] text-amber-300 font-mono">
                       Doc: {{ dev.messages.types.document }}
                     </span>
-                    <span v-if="dev.messages?.types?.audio" class="px-1.5 py-0.5 rounded bg-purple-900/40 text-[10px] text-purple-300 font-mono">
+                    <span v-if="dev.messages?.types?.audio" class="px-1.5 py-0.5 rounded-sm bg-purple-900/40 text-[10px] text-purple-300 font-mono">
                       Audio: {{ dev.messages.types.audio }}
                     </span>
                     <span v-if="!dev.messages?.total" class="text-slate-500 text-[11px]">
@@ -411,8 +411,8 @@
 
     <!-- TAB 2: USAGE PER API KEY -->
     <div v-if="activeTab === 'api-keys'" class="space-y-4">
-      <div class="glass-panel rounded-2xl border border-[#2a3942] overflow-hidden">
-        <div class="p-4 bg-[#202c33]/40 border-b border-[#2a3942] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div class="glass-panel rounded-2xl border border-wa-border overflow-hidden">
+        <div class="p-4 bg-wa-panel/40 border-b border-wa-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h3 class="text-sm font-bold text-white">Client API Key Usage Metrics</h3>
             <p class="text-xs text-slate-400">Total API calls, error rates, and endpoints used by external integrations</p>
@@ -422,7 +422,7 @@
               v-model="apiKeySearch"
               type="text"
               placeholder="Filter by token name or owner..."
-              class="w-full px-3.5 py-1.5 bg-[#202c33] border border-[#2a3942] rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+              class="w-full px-3.5 py-1.5 bg-wa-panel border border-wa-border rounded-xl text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-emerald-500"
             />
           </div>
         </div>
@@ -433,7 +433,7 @@
 
         <div v-else class="overflow-x-auto">
           <table class="w-full text-left text-xs">
-            <thead class="bg-[#202c33]/70 text-slate-400 uppercase font-semibold border-b border-[#2a3942]">
+            <thead class="bg-wa-panel/70 text-slate-400 uppercase font-semibold border-b border-wa-border">
               <tr>
                 <th class="px-5 py-3.5">API Key / Application</th>
                 <th class="px-5 py-3.5">Owner</th>
@@ -445,13 +445,13 @@
                 <th class="px-5 py-3.5">Last Request</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-[#2a3942]/60">
-              <tr v-for="k in filteredApiKeys" :key="k.id" class="hover:bg-[#202c33]/40 transition">
+            <tbody class="divide-y divide-wa-border/60">
+              <tr v-for="k in filteredApiKeys" :key="k.id" class="hover:bg-wa-panel/40 transition">
                 <!-- Key Info -->
                 <td class="px-5 py-4">
                   <div class="font-bold text-white text-sm flex items-center gap-2">
                     {{ k.name }}
-                    <span v-if="!k.isActive" class="px-1.5 py-0.5 rounded bg-rose-500/10 text-rose-400 text-[10px] font-normal border border-rose-500/20">
+                    <span v-if="!k.isActive" class="px-1.5 py-0.5 rounded-sm bg-rose-500/10 text-rose-400 text-[10px] font-normal border border-rose-500/20">
                       Disabled
                     </span>
                   </div>
@@ -492,10 +492,10 @@
                 <!-- Errors -->
                 <td class="px-5 py-4">
                   <div class="flex items-center gap-2">
-                    <span class="px-2 py-0.5 rounded bg-slate-800 text-[11px] text-amber-300 font-mono" title="Client Errors (4xx)">
+                    <span class="px-2 py-0.5 rounded-sm bg-slate-800 text-[11px] text-amber-300 font-mono" title="Client Errors (4xx)">
                       4xx: {{ k.clientErrors }}
                     </span>
-                    <span class="px-2 py-0.5 rounded bg-rose-500/15 text-[11px] text-rose-400 font-mono" title="Server Errors (5xx)">
+                    <span class="px-2 py-0.5 rounded-sm bg-rose-500/15 text-[11px] text-rose-400 font-mono" title="Server Errors (5xx)">
                       5xx: {{ k.serverErrors }}
                     </span>
                   </div>
@@ -522,7 +522,7 @@
                       class="flex items-center gap-1.5 text-[10px] font-mono text-slate-300"
                     >
                       <span class="truncate max-w-[150px] text-slate-400">{{ ep.endpoint.replace('/api/v1', '') }}</span>
-                      <span class="px-1 py-0.2 rounded bg-slate-800 text-emerald-400 font-bold">({{ ep.count }})</span>
+                      <span class="px-1 py-0.2 rounded-sm bg-slate-800 text-emerald-400 font-bold">({{ ep.count }})</span>
                     </div>
                   </div>
                   <span v-else class="text-slate-500 text-[11px]">No activity yet</span>
@@ -541,9 +541,9 @@
 
     <!-- TAB 3: LIVE AUDIT LOGS -->
     <div v-if="activeTab === 'logs'" class="space-y-4">
-      <div class="glass-panel rounded-2xl border border-[#2a3942] overflow-hidden">
+      <div class="glass-panel rounded-2xl border border-wa-border overflow-hidden">
         <!-- Log Filter Bar -->
-        <div class="p-4 bg-[#202c33]/40 border-b border-[#2a3942] flex flex-wrap items-center justify-between gap-3">
+        <div class="p-4 bg-wa-panel/40 border-b border-wa-border flex flex-wrap items-center justify-between gap-3">
           <div>
             <h3 class="text-sm font-bold text-white">Recent API Calls Audit Trail</h3>
             <p class="text-xs text-slate-400">Detailed records of requests received, execution latency, and return status codes</p>
@@ -553,7 +553,7 @@
             <select
               v-model="logStatusFilter"
               @change="fetchRecentLogs"
-              class="px-3 py-1.5 bg-[#202c33] border border-[#2a3942] rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500"
+              class="px-3 py-1.5 bg-wa-panel border border-wa-border rounded-xl text-xs text-white focus:outline-hidden focus:border-emerald-500"
             >
               <option value="">All Status Codes</option>
               <option value="success">Success (2xx)</option>
@@ -562,7 +562,7 @@
 
             <button
               @click="fetchRecentLogs"
-              class="px-3 py-1.5 bg-[#202c33] hover:bg-slate-700 text-slate-200 border border-[#2a3942] rounded-xl text-xs transition font-semibold"
+              class="px-3 py-1.5 bg-wa-panel hover:bg-slate-700 text-slate-200 border border-wa-border rounded-xl text-xs transition font-semibold"
             >
               Apply Filter
             </button>
@@ -575,7 +575,7 @@
 
         <div v-else class="overflow-x-auto">
           <table class="w-full text-left text-xs">
-            <thead class="bg-[#202c33]/70 text-slate-400 uppercase font-semibold border-b border-[#2a3942]">
+            <thead class="bg-wa-panel/70 text-slate-400 uppercase font-semibold border-b border-wa-border">
               <tr>
                 <th class="px-5 py-3.5">Timestamp</th>
                 <th class="px-5 py-3.5">Method & Endpoint</th>
@@ -586,8 +586,8 @@
                 <th class="px-5 py-3.5">Caller IP</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-[#2a3942]/60">
-              <tr v-for="log in auditLogs" :key="log.id" class="hover:bg-[#202c33]/40 transition">
+            <tbody class="divide-y divide-wa-border/60">
+              <tr v-for="log in auditLogs" :key="log.id" class="hover:bg-wa-panel/40 transition">
                 <!-- Time -->
                 <td class="px-5 py-3.5 text-slate-400 font-mono text-[11px] whitespace-nowrap">
                   {{ formatTime(log.created_at) }}
@@ -598,7 +598,7 @@
                   <div class="flex items-center gap-2">
                     <span
                       :class="log.method === 'POST' ? 'bg-blue-500/20 text-blue-400 border-blue-500/30' : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'"
-                      class="px-1.5 py-0.5 rounded text-[10px] font-bold border"
+                      class="px-1.5 py-0.5 rounded-sm text-[10px] font-bold border"
                     >
                       {{ log.method }}
                     </span>
@@ -616,7 +616,7 @@
                         ? 'bg-amber-500/15 text-amber-400 border-amber-500/30'
                         : 'bg-rose-500/15 text-rose-400 border-rose-500/30'
                     ]"
-                    class="px-2 py-0.5 rounded font-mono font-bold text-[11px] border"
+                    class="px-2 py-0.5 rounded-sm font-mono font-bold text-[11px] border"
                   >
                     {{ log.status_code }}
                   </span>
@@ -649,7 +649,7 @@
         </div>
 
         <!-- Pagination -->
-        <div v-if="logPagination.totalPages > 1" class="p-4 bg-[#202c33]/30 border-t border-[#2a3942] flex items-center justify-between text-xs text-slate-400">
+        <div v-if="logPagination.totalPages > 1" class="p-4 bg-wa-panel/30 border-t border-wa-border flex items-center justify-between text-xs text-slate-400">
           <div>
             Showing Page <span class="text-white font-bold">{{ logPagination.page }}</span> of <span class="text-white font-bold">{{ logPagination.totalPages }}</span> ({{ logPagination.total }} logs)
           </div>
@@ -657,14 +657,14 @@
             <button
               @click="changeLogPage(logPagination.page - 1)"
               :disabled="logPagination.page <= 1"
-              class="px-3 py-1 bg-[#202c33] hover:bg-slate-700 disabled:opacity-40 rounded-lg text-white transition"
+              class="px-3 py-1 bg-wa-panel hover:bg-slate-700 disabled:opacity-40 rounded-lg text-white transition"
             >
               Previous
             </button>
             <button
               @click="changeLogPage(logPagination.page + 1)"
               :disabled="logPagination.page >= logPagination.totalPages"
-              class="px-3 py-1 bg-[#202c33] hover:bg-slate-700 disabled:opacity-40 rounded-lg text-white transition"
+              class="px-3 py-1 bg-wa-panel hover:bg-slate-700 disabled:opacity-40 rounded-lg text-white transition"
             >
               Next
             </button>

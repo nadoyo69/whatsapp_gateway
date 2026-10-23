@@ -1,8 +1,8 @@
 <template>
-  <aside class="w-64 flex-shrink-0 bg-[#111b21] border-r border-[#2a3942] flex flex-col justify-between h-screen sticky top-0 z-30">
+  <aside class="w-64 shrink-0 bg-wa-card border-r border-wa-border flex flex-col justify-between h-screen sticky top-0 z-30">
     <!-- Brand Logo -->
     <div>
-      <div class="h-16 flex items-center gap-3 px-6 border-b border-[#2a3942]">
+      <div class="h-16 flex items-center gap-3 px-6 border-b border-wa-border">
         <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-black text-sm shadow-lg shadow-emerald-500/10">
           NG
         </div>
@@ -21,7 +21,7 @@
           :class="[
             $route.path === item.path 
               ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' 
-              : 'text-slate-400 hover:text-slate-200 hover:bg-[#202c33]/50'
+              : 'text-slate-400 hover:text-slate-200 hover:bg-wa-panel/50'
           ]"
           class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all group"
         >
@@ -32,7 +32,7 @@
     </div>
 
     <!-- User Profile & Footer Version -->
-    <div class="p-4 border-t border-[#2a3942] bg-[#0b141a]/40 space-y-3">
+    <div class="p-4 border-t border-wa-border bg-wa-dark/40 space-y-3">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2.5 overflow-hidden">
           <div class="w-8 h-8 rounded-lg bg-slate-800 text-slate-300 flex items-center justify-center font-bold text-xs uppercase border border-slate-700">
@@ -51,9 +51,9 @@
       </div>
 
       <!-- Version Indicator -->
-      <div class="pt-2 border-t border-[#2a3942]/50 flex items-center justify-between text-[11px] text-slate-500">
+      <div class="pt-2 border-t border-wa-border/50 flex items-center justify-between text-[11px] text-slate-500">
         <span>NexforgexGateway</span>
-        <span class="px-1.5 py-0.5 rounded bg-slate-800 text-emerald-400 font-mono font-bold text-[10px]">V1.0.0</span>
+        <span class="px-1.5 py-0.5 rounded-sm bg-slate-800 text-emerald-400 font-mono font-bold text-[10px]">V1.0.0</span>
       </div>
     </div>
   </aside>

@@ -18,7 +18,7 @@
     </div>
 
     <!-- Sessions Table / Card List -->
-    <div class="glass-panel rounded-2xl border border-[#2a3942] overflow-hidden">
+    <div class="glass-panel rounded-2xl border border-wa-border overflow-hidden">
       <div v-if="sessions.length === 0" class="p-12 text-center space-y-3">
         <p class="text-slate-400 text-sm">No WhatsApp device sessions found.</p>
         <button @click="showCreateModal = true" class="text-xs font-semibold text-emerald-400 hover:underline">
@@ -28,7 +28,7 @@
 
       <div v-else class="overflow-x-auto">
         <table class="w-full text-left text-xs">
-          <thead class="bg-[#202c33]/70 text-slate-400 uppercase font-semibold border-b border-[#2a3942]">
+          <thead class="bg-wa-panel/70 text-slate-400 uppercase font-semibold border-b border-wa-border">
             <tr>
               <th class="px-6 py-4">Device / Session Name</th>
               <th class="px-6 py-4">Session ID</th>
@@ -39,8 +39,8 @@
               <th class="px-6 py-4 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-[#2a3942]/60">
-            <tr v-for="s in sessions" :key="s.session_id" class="hover:bg-[#202c33]/40 transition">
+          <tbody class="divide-y divide-wa-border/60">
+            <tr v-for="s in sessions" :key="s.session_id" class="hover:bg-wa-panel/40 transition">
               <td class="px-6 py-4 font-semibold text-white">
                 <div class="flex items-center gap-2.5">
                   <div class="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold">
@@ -56,7 +56,7 @@
                   <span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
                   {{ s.token_name }}
                 </span>
-                <span v-else class="px-2 py-0.5 rounded-lg bg-slate-800 text-slate-400 border border-[#2a3942] text-[11px] font-semibold">
+                <span v-else class="px-2 py-0.5 rounded-lg bg-slate-800 text-slate-400 border border-wa-border text-[11px] font-semibold">
                   Global / Shared
                 </span>
               </td>
@@ -142,9 +142,9 @@
     </div>
 
     <!-- Create Session Modal -->
-    <div v-if="showCreateModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-      <div class="w-full max-w-md bg-[#111b21] border border-[#2a3942] rounded-3xl p-6 shadow-2xl space-y-5">
-        <div class="flex items-center justify-between pb-3 border-b border-[#2a3942]">
+    <div v-if="showCreateModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs animate-fadeIn">
+      <div class="w-full max-w-md bg-wa-card border border-wa-border rounded-3xl p-6 shadow-2xl space-y-5">
+        <div class="flex items-center justify-between pb-3 border-b border-wa-border">
           <h3 class="text-base font-bold text-white">Create New Device Session</h3>
           <button @click="showCreateModal = false" class="text-slate-400 hover:text-white p-1 rounded-lg">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -161,7 +161,7 @@
               type="text" 
               required 
               placeholder="e.g. session_sales_01" 
-              class="w-full px-4 py-2.5 bg-[#202c33] border border-[#2a3942] rounded-xl text-white placeholder-slate-500 text-xs font-mono focus:border-emerald-500 focus:outline-none"
+              class="w-full px-4 py-2.5 bg-wa-panel border border-wa-border rounded-xl text-white placeholder-slate-500 text-xs font-mono focus:border-emerald-500 focus:outline-hidden"
             />
           </div>
 
@@ -172,7 +172,7 @@
               type="text" 
               required 
               placeholder="e.g. CS Sales Office" 
-              class="w-full px-4 py-2.5 bg-[#202c33] border border-[#2a3942] rounded-xl text-white placeholder-slate-500 text-xs focus:border-emerald-500 focus:outline-none"
+              class="w-full px-4 py-2.5 bg-wa-panel border border-wa-border rounded-xl text-white placeholder-slate-500 text-xs focus:border-emerald-500 focus:outline-hidden"
             />
           </div>
 
@@ -182,7 +182,7 @@
               v-model="newSession.webhookUrl" 
               type="url" 
               placeholder="https://your-app.com/api/wa-webhook" 
-              class="w-full px-4 py-2.5 bg-[#202c33] border border-[#2a3942] rounded-xl text-white placeholder-slate-500 text-xs focus:border-emerald-500 focus:outline-none"
+              class="w-full px-4 py-2.5 bg-wa-panel border border-wa-border rounded-xl text-white placeholder-slate-500 text-xs focus:border-emerald-500 focus:outline-hidden"
             />
           </div>
 
@@ -192,7 +192,7 @@
               v-model="newSession.webhookSecret" 
               type="text" 
               placeholder="secret-signature-key" 
-              class="w-full px-4 py-2.5 bg-[#202c33] border border-[#2a3942] rounded-xl text-white placeholder-slate-500 text-xs focus:border-emerald-500 focus:outline-none"
+              class="w-full px-4 py-2.5 bg-wa-panel border border-wa-border rounded-xl text-white placeholder-slate-500 text-xs focus:border-emerald-500 focus:outline-hidden"
             />
           </div>
 
@@ -200,7 +200,7 @@
             <label class="block text-xs font-semibold text-slate-300 mb-1">Assign to API Key (Optional)</label>
             <select 
               v-model="newSession.apiTokenId" 
-              class="w-full px-4 py-2.5 bg-[#202c33] border border-[#2a3942] rounded-xl text-white text-xs focus:border-emerald-500 focus:outline-none"
+              class="w-full px-4 py-2.5 bg-wa-panel border border-wa-border rounded-xl text-white text-xs focus:border-emerald-500 focus:outline-hidden"
             >
               <option value="">Global / Shared (Accessible to all authorized keys)</option>
               <option v-for="k in apiKeys" :key="k.id" :value="k.id">
@@ -215,12 +215,12 @@
               v-model="newSession.autoRead" 
               type="checkbox" 
               id="autoRead"
-              class="w-4 h-4 rounded text-emerald-500 bg-[#202c33] border-[#2a3942] focus:ring-emerald-500"
+              class="w-4 h-4 rounded-sm text-emerald-500 bg-wa-panel border-wa-border focus:ring-emerald-500"
             />
             <label for="autoRead" class="text-xs text-slate-300 cursor-pointer">Auto read incoming WhatsApp messages (Blue ticks)</label>
           </div>
 
-          <div class="flex items-center justify-end gap-3 pt-4 border-t border-[#2a3942]">
+          <div class="flex items-center justify-end gap-3 pt-4 border-t border-wa-border">
             <button type="button" @click="showCreateModal = false" class="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 transition">
               Cancel
             </button>
@@ -234,9 +234,9 @@
     </div>
 
     <!-- Edit Settings Modal -->
-    <div v-if="showSettingsModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-      <div class="w-full max-w-md bg-[#111b21] border border-[#2a3942] rounded-3xl p-6 shadow-2xl space-y-5">
-        <div class="flex items-center justify-between pb-3 border-b border-[#2a3942]">
+    <div v-if="showSettingsModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs animate-fadeIn">
+      <div class="w-full max-w-md bg-wa-card border border-wa-border rounded-3xl p-6 shadow-2xl space-y-5">
+        <div class="flex items-center justify-between pb-3 border-b border-wa-border">
           <h3 class="text-base font-bold text-white">Device Settings ({{ selectedDevice?.session_id }})</h3>
           <button @click="showSettingsModal = false" class="text-slate-400 hover:text-white p-1 rounded-lg">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -252,7 +252,7 @@
               v-model="editSettings.name" 
               type="text" 
               required 
-              class="w-full px-4 py-2.5 bg-[#202c33] border border-[#2a3942] rounded-xl text-white text-xs focus:border-emerald-500 focus:outline-none"
+              class="w-full px-4 py-2.5 bg-wa-panel border border-wa-border rounded-xl text-white text-xs focus:border-emerald-500 focus:outline-hidden"
             />
           </div>
 
@@ -262,7 +262,7 @@
               v-model="editSettings.webhookUrl" 
               type="url" 
               placeholder="https://your-app.com/api/wa-webhook" 
-              class="w-full px-4 py-2.5 bg-[#202c33] border border-[#2a3942] rounded-xl text-white text-xs focus:border-emerald-500 focus:outline-none"
+              class="w-full px-4 py-2.5 bg-wa-panel border border-wa-border rounded-xl text-white text-xs focus:border-emerald-500 focus:outline-hidden"
             />
           </div>
 
@@ -272,7 +272,7 @@
               v-model="editSettings.webhookSecret" 
               type="text" 
               placeholder="secret" 
-              class="w-full px-4 py-2.5 bg-[#202c33] border border-[#2a3942] rounded-xl text-white text-xs focus:border-emerald-500 focus:outline-none"
+              class="w-full px-4 py-2.5 bg-wa-panel border border-wa-border rounded-xl text-white text-xs focus:border-emerald-500 focus:outline-hidden"
             />
           </div>
 
@@ -280,7 +280,7 @@
             <label class="block text-xs font-semibold text-slate-300 mb-1">Owner / Assigned API Key</label>
             <select 
               v-model="editSettings.apiTokenId" 
-              class="w-full px-4 py-2.5 bg-[#202c33] border border-[#2a3942] rounded-xl text-white text-xs focus:border-emerald-500 focus:outline-none"
+              class="w-full px-4 py-2.5 bg-wa-panel border border-wa-border rounded-xl text-white text-xs focus:border-emerald-500 focus:outline-hidden"
             >
               <option value="">Global / Shared (Accessible to all authorized keys)</option>
               <option v-for="k in apiKeys" :key="k.id" :value="k.id">
@@ -295,12 +295,12 @@
               v-model="editSettings.autoRead" 
               type="checkbox" 
               id="editAutoRead"
-              class="w-4 h-4 rounded text-emerald-500 bg-[#202c33] border-[#2a3942] focus:ring-emerald-500"
+              class="w-4 h-4 rounded-sm text-emerald-500 bg-wa-panel border-wa-border focus:ring-emerald-500"
             />
             <label for="editAutoRead" class="text-xs text-slate-300 cursor-pointer">Auto read incoming WhatsApp messages</label>
           </div>
 
-          <div class="flex items-center justify-end gap-3 pt-4 border-t border-[#2a3942]">
+          <div class="flex items-center justify-end gap-3 pt-4 border-t border-wa-border">
             <button type="button" @click="showSettingsModal = false" class="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 transition">
               Cancel
             </button>

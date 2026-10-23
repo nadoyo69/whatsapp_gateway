@@ -12,7 +12,7 @@
         <select 
           v-model="selectedSessionId" 
           @change="fetchChats"
-          class="px-3 py-1.5 bg-[#202c33] border border-[#2a3942] rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500 font-mono"
+          class="px-3 py-1.5 bg-wa-panel border border-wa-border rounded-xl text-xs text-white focus:outline-hidden focus:border-emerald-500 font-mono"
         >
           <option v-for="s in sessions" :key="s.session_id" :value="s.session_id">
             {{ s.name }} ({{ s.session_id }})
@@ -24,20 +24,20 @@
     <!-- Chat Container: Thread list (Left) & Messages box (Right) -->
     <div class="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-12 gap-4">
       <!-- Left Column: Chats list -->
-      <div class="md:col-span-4 glass-panel rounded-2xl border border-[#2a3942] flex flex-col overflow-hidden">
+      <div class="md:col-span-4 glass-panel rounded-2xl border border-wa-border flex flex-col overflow-hidden">
         <!-- Search bar -->
-        <div class="p-3 border-b border-[#2a3942]">
+        <div class="p-3 border-b border-wa-border">
           <input 
             v-model="searchQuery" 
             @input="handleSearch"
             type="text" 
             placeholder="Search contact or phone..." 
-            class="w-full px-3 py-2 bg-[#202c33] border border-[#2a3942] rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+            class="w-full px-3 py-2 bg-wa-panel border border-wa-border rounded-xl text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-emerald-500"
           />
         </div>
 
         <!-- Chat List Items -->
-        <div class="flex-1 overflow-y-auto divide-y divide-[#2a3942]/40">
+        <div class="flex-1 overflow-y-auto divide-y divide-wa-border/40">
           <div v-if="loadingChats" class="p-8 text-center text-xs text-slate-400">
             Loading conversations...
           </div>
@@ -50,12 +50,12 @@
             @click="selectChat(chat)"
             :class="[
               activeChat?.jid === chat.jid 
-                ? 'bg-[#202c33] border-l-4 border-l-emerald-500' 
-                : 'hover:bg-[#202c33]/40'
+                ? 'bg-wa-panel border-l-4 border-l-emerald-500' 
+                : 'hover:bg-wa-panel/40'
             ]"
             class="w-full text-left p-3.5 flex items-center gap-3 transition"
           >
-            <div class="w-10 h-10 rounded-full bg-slate-800 text-emerald-400 font-bold flex items-center justify-center text-xs flex-shrink-0 border border-[#2a3942]">
+            <div class="w-10 h-10 rounded-full bg-slate-800 text-emerald-400 font-bold flex items-center justify-center text-xs shrink-0 border border-wa-border">
               {{ chat.name?.charAt(0) || 'U' }}
             </div>
             <div class="flex-1 min-w-0">
@@ -73,7 +73,7 @@
       </div>
 
       <!-- Right Column: Messages Thread -->
-      <div class="md:col-span-8 glass-panel rounded-2xl border border-[#2a3942] flex flex-col overflow-hidden">
+      <div class="md:col-span-8 glass-panel rounded-2xl border border-wa-border flex flex-col overflow-hidden">
         <div v-if="!activeChat" class="flex-1 flex flex-col items-center justify-center text-center p-8 text-slate-400 space-y-2">
           <div class="w-12 h-12 rounded-full bg-slate-800 text-slate-500 flex items-center justify-center">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -85,7 +85,7 @@
 
         <div v-else class="flex-1 flex flex-col h-full">
           <!-- Chat header -->
-          <div class="p-3.5 bg-[#202c33]/60 border-b border-[#2a3942] flex items-center justify-between">
+          <div class="p-3.5 bg-wa-panel/60 border-b border-wa-border flex items-center justify-between">
             <div class="flex items-center gap-3">
               <div class="w-9 h-9 rounded-full bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center text-xs">
                 {{ activeChat.name?.charAt(0) || 'U' }}
@@ -103,7 +103,7 @@
           </div>
 
           <!-- Messages scroll area -->
-          <div class="flex-1 p-4 overflow-y-auto space-y-3 bg-[#0b141a]/60">
+          <div class="flex-1 p-4 overflow-y-auto space-y-3 bg-wa-dark/60">
             <div 
               v-for="m in messages" 
               :key="m._id"
@@ -114,9 +114,9 @@
                 :class="[
                   m.from_me 
                     ? 'bg-[#005c4b] text-white rounded-br-none' 
-                    : 'bg-[#202c33] text-slate-100 rounded-bl-none'
+                    : 'bg-wa-panel text-slate-100 rounded-bl-none'
                 ]"
-                class="max-w-[75%] rounded-2xl p-3 shadow text-xs space-y-1"
+                class="max-w-[75%] rounded-2xl p-3 shadow-sm text-xs space-y-1"
               >
                 <p v-if="!m.from_me && m.sender_name" class="text-[10px] font-bold text-emerald-400">{{ m.sender_name }}</p>
                 <p class="whitespace-pre-wrap leading-relaxed">{{ m.text }}</p>
@@ -134,13 +134,13 @@
           </div>
 
           <!-- Quick reply form -->
-          <div class="p-3 bg-[#202c33]/70 border-t border-[#2a3942] flex items-center gap-2">
+          <div class="p-3 bg-wa-panel/70 border-t border-wa-border flex items-center gap-2">
             <input 
               v-model="replyText" 
               @keyup.enter="sendQuickReply"
               type="text" 
               placeholder="Type a message to send..." 
-              class="flex-1 px-4 py-2.5 bg-[#111b21] border border-[#2a3942] rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+              class="flex-1 px-4 py-2.5 bg-wa-card border border-wa-border rounded-xl text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-emerald-500"
             />
             <button 
               @click="sendQuickReply" 

@@ -6,7 +6,7 @@ const customSwal = Swal.mixin({
   color: '#e9edef',
   backdrop: 'rgba(11, 20, 26, 0.8)',
   customClass: {
-    popup: 'border border-[#2a3942] rounded-3xl shadow-2xl p-6 font-["Plus_Jakarta_Sans",sans-serif]',
+    popup: 'border border-wa-border rounded-3xl shadow-2xl p-6 font-["Plus_Jakarta_Sans",sans-serif]',
     title: 'text-lg font-bold text-white',
     htmlContainer: 'text-xs text-slate-300',
     confirmButton: 'px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg shadow-emerald-600/20 transition mx-1.5 cursor-pointer',
@@ -26,7 +26,7 @@ const Toast = Swal.mixin({
   background: '#111b21',
   color: '#e9edef',
   customClass: {
-    popup: 'border border-[#2a3942] rounded-2xl shadow-xl p-4 flex items-center font-["Plus_Jakarta_Sans",sans-serif]'
+    popup: 'border border-wa-border rounded-2xl shadow-xl p-4 flex items-center font-["Plus_Jakarta_Sans",sans-serif]'
   },
   didOpen: (toast) => {
     toast.addEventListener('mouseenter', Swal.stopTimer);
@@ -80,7 +80,7 @@ export const confirmDialog = async (title = 'Are you sure?', text = '', confirmB
     confirmButtonText,
     cancelButtonText: 'Cancel',
     customClass: {
-      popup: 'border border-[#2a3942] rounded-3xl shadow-2xl p-6 font-["Plus_Jakarta_Sans",sans-serif]',
+      popup: 'border border-wa-border rounded-3xl shadow-2xl p-6 font-["Plus_Jakarta_Sans",sans-serif]',
       title: 'text-lg font-bold text-white',
       htmlContainer: 'text-xs text-slate-300',
       confirmButton: isDanger 

@@ -1,8 +1,8 @@
 <template>
-  <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-    <div class="relative w-full max-w-md bg-[#111b21] border border-[#2a3942] rounded-2xl p-6 shadow-2xl text-center">
+  <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs animate-fadeIn">
+    <div class="relative w-full max-w-md bg-wa-card border border-wa-border rounded-2xl p-6 shadow-2xl text-center">
       <!-- Header -->
-      <div class="flex items-center justify-between pb-4 border-b border-[#2a3942]/60">
+      <div class="flex items-center justify-between pb-4 border-b border-wa-border/60">
         <div class="flex items-center gap-2.5">
           <div class="p-2 rounded-xl bg-blue-500/10 text-blue-400">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -30,7 +30,7 @@
               v-model="phoneNumber" 
               type="text" 
               placeholder="e.g. 628123456789" 
-              class="w-full px-4 py-3 bg-[#202c33] border border-[#2a3942] rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 font-mono text-sm"
+              class="w-full px-4 py-3 bg-wa-panel border border-wa-border rounded-xl text-white placeholder-slate-500 focus:outline-hidden focus:border-blue-500 font-mono text-sm"
             />
           </div>
           <p class="text-[11px] text-slate-400">Input number with international country code (e.g. 62 for Indonesia).</p>
@@ -46,10 +46,10 @@
 
         <div v-else class="space-y-5">
           <p class="text-xs text-slate-400">Enter this 8-digit code on WhatsApp notification:</p>
-          <div class="py-4 px-6 bg-[#202c33] border-2 border-dashed border-blue-500/50 rounded-2xl">
+          <div class="py-4 px-6 bg-wa-panel border-2 border-dashed border-blue-500/50 rounded-2xl">
             <span class="font-mono text-3xl font-extrabold text-blue-400 tracking-widest">{{ formattedCode }}</span>
           </div>
-          <div class="text-left bg-[#202c33]/40 p-3.5 rounded-xl border border-[#2a3942]/60 text-xs text-slate-400 space-y-1">
+          <div class="text-left bg-wa-panel/40 p-3.5 rounded-xl border border-wa-border/60 text-xs text-slate-400 space-y-1">
             <p class="text-slate-200 font-semibold">Instructions:</p>
             <p>1. Open WhatsApp on phone > Linked Devices > Link with Phone Number.</p>
             <p>2. Type the 8-character pairing code above.</p>
@@ -60,7 +60,7 @@
       </div>
 
       <!-- Footer -->
-      <div class="flex items-center justify-end pt-4 border-t border-[#2a3942]/60">
+      <div class="flex items-center justify-end pt-4 border-t border-wa-border/60">
         <button @click="close" class="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 transition">
           Close
         </button>

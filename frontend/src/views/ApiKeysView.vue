@@ -18,14 +18,14 @@
     </div>
 
     <!-- API Keys List -->
-    <div class="glass-panel rounded-2xl border border-[#2a3942] overflow-hidden">
+    <div class="glass-panel rounded-2xl border border-wa-border overflow-hidden">
       <div v-if="keys.length === 0" class="p-12 text-center text-xs text-slate-400">
         No API keys generated yet. Click above to generate your first key.
       </div>
 
       <div v-else class="overflow-x-auto">
         <table class="w-full text-left text-xs">
-          <thead class="bg-[#202c33]/70 text-slate-400 uppercase font-semibold border-b border-[#2a3942]">
+          <thead class="bg-wa-panel/70 text-slate-400 uppercase font-semibold border-b border-wa-border">
             <tr>
               <th class="px-6 py-4">Key Name / App</th>
               <th class="px-6 py-4">API Token</th>
@@ -35,12 +35,12 @@
               <th class="px-6 py-4 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-[#2a3942]/60">
-            <tr v-for="k in keys" :key="k.id" class="hover:bg-[#202c33]/40 transition">
+          <tbody class="divide-y divide-wa-border/60">
+            <tr v-for="k in keys" :key="k.id" class="hover:bg-wa-panel/40 transition">
               <td class="px-6 py-4 font-bold text-white">{{ k.name }}</td>
               <td class="px-6 py-4">
                 <div class="flex items-center gap-2">
-                  <span class="font-mono text-emerald-400 bg-slate-900 px-2 py-1 rounded border border-[#2a3942]">
+                  <span class="font-mono text-emerald-400 bg-slate-900 px-2 py-1 rounded-sm border border-wa-border">
                     {{ visibleKeys[k.id] ? k.token : maskKey(k.token) }}
                   </span>
                   <button @click="toggleKeyVisibility(k.id)" class="text-slate-400 hover:text-white p-1">
@@ -57,7 +57,7 @@
                 </div>
               </td>
               <td class="px-6 py-4">
-                <span :class="k.is_active ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border-rose-500/20'" class="px-2 py-0.5 rounded text-[11px] font-semibold border">
+                <span :class="k.is_active ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border-rose-500/20'" class="px-2 py-0.5 rounded-sm text-[11px] font-semibold border">
                   {{ k.is_active ? 'Active' : 'Revoked' }}
                 </span>
               </td>
@@ -78,9 +78,9 @@
     </div>
 
     <!-- Create Modal -->
-    <div v-if="showCreateModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-      <div class="w-full max-w-md bg-[#111b21] border border-[#2a3942] rounded-3xl p-6 shadow-2xl space-y-4">
-        <div class="flex items-center justify-between pb-3 border-b border-[#2a3942]">
+    <div v-if="showCreateModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs animate-fadeIn">
+      <div class="w-full max-w-md bg-wa-card border border-wa-border rounded-3xl p-6 shadow-2xl space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-wa-border">
           <h3 class="text-base font-bold text-white">Generate API Key</h3>
           <button @click="showCreateModal = false" class="text-slate-400 hover:text-white p-1 rounded-lg">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -97,7 +97,7 @@
               type="text" 
               required 
               placeholder="e.g. Laravel POS Backend" 
-              class="w-full px-4 py-2.5 bg-[#202c33] border border-[#2a3942] rounded-xl text-white text-xs focus:border-emerald-500 focus:outline-none"
+              class="w-full px-4 py-2.5 bg-wa-panel border border-wa-border rounded-xl text-white text-xs focus:border-emerald-500 focus:outline-hidden"
             />
           </div>
 

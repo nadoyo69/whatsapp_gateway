@@ -1,8 +1,8 @@
 <template>
-  <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-    <div class="relative w-full max-w-md bg-[#111b21] border border-[#2a3942] rounded-2xl p-6 shadow-2xl text-center">
+  <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs animate-fadeIn">
+    <div class="relative w-full max-w-md bg-wa-card border border-wa-border rounded-2xl p-6 shadow-2xl text-center">
       <!-- Header -->
-      <div class="flex items-center justify-between pb-4 border-b border-[#2a3942]/60">
+      <div class="flex items-center justify-between pb-4 border-b border-wa-border/60">
         <div class="flex items-center gap-2.5">
           <div class="p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -38,13 +38,13 @@
           <div class="absolute inset-0 rounded-2xl ring-4 ring-emerald-500/20 animate-pulse pointer-events-none"></div>
         </div>
 
-        <div v-else class="w-64 h-64 flex flex-col items-center justify-center bg-[#202c33]/50 rounded-2xl border border-dashed border-[#2a3942]">
+        <div v-else class="w-64 h-64 flex flex-col items-center justify-center bg-wa-panel/50 rounded-2xl border border-dashed border-wa-border">
           <div class="w-8 h-8 border-4 border-emerald-500/30 border-t-emerald-400 rounded-full animate-spin"></div>
           <p class="text-xs text-slate-400 mt-3 font-medium">Generating QR Code...</p>
         </div>
 
         <!-- Instruction -->
-        <div v-if="!connected" class="mt-5 text-xs text-slate-400 max-w-xs space-y-1 text-left bg-[#202c33]/40 p-3.5 rounded-xl border border-[#2a3942]/60">
+        <div v-if="!connected" class="mt-5 text-xs text-slate-400 max-w-xs space-y-1 text-left bg-wa-panel/40 p-3.5 rounded-xl border border-wa-border/60">
           <p class="font-semibold text-slate-200 flex items-center gap-1.5">
             <span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 inline-flex items-center justify-center text-[10px]">1</span>
             Open WhatsApp on your phone
@@ -58,7 +58,7 @@
       </div>
 
       <!-- Footer Buttons -->
-      <div class="flex items-center justify-between pt-4 border-t border-[#2a3942]/60">
+      <div class="flex items-center justify-between pt-4 border-t border-wa-border/60">
         <button @click="refreshQR" :disabled="refreshing || connected" class="text-xs text-slate-300 hover:text-emerald-400 inline-flex items-center gap-1.5 transition disabled:opacity-50">
           <svg :class="{'animate-spin': refreshing}" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />

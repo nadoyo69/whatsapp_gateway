@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-8 animate-fadeIn">
     <!-- Welcome Header & Quick Actions -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-[#111b21] via-[#15242c] to-[#111b21] p-6 rounded-3xl border border-[#2a3942] shadow-xl">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-linear-to-r from-wa-card via-[#15242c] to-wa-card p-6 rounded-3xl border border-wa-border shadow-xl">
       <div>
         <h2 class="text-xl font-bold text-white flex items-center gap-2.5">
           Welcome back, {{ user?.username }}!
@@ -16,7 +16,7 @@
           </svg>
           Add New Device
         </RouterLink>
-        <RouterLink to="/sender" class="px-4 py-2.5 rounded-xl bg-[#202c33] hover:bg-slate-700 text-slate-200 border border-[#2a3942] text-xs font-semibold transition flex items-center gap-2">
+        <RouterLink to="/sender" class="px-4 py-2.5 rounded-xl bg-wa-panel hover:bg-slate-700 text-slate-200 border border-wa-border text-xs font-semibold transition flex items-center gap-2">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
           </svg>
@@ -28,7 +28,7 @@
     <!-- Metric Stat Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
       <!-- Active Sessions -->
-      <div class="glass-panel p-5 rounded-2xl border border-[#2a3942] flex items-center justify-between">
+      <div class="glass-panel p-5 rounded-2xl border border-wa-border flex items-center justify-between">
         <div>
           <p class="text-xs font-medium text-slate-400">Active Devices</p>
           <h3 class="text-2xl font-black text-white mt-1">
@@ -47,7 +47,7 @@
       </div>
 
       <!-- Total Messages -->
-      <div class="glass-panel p-5 rounded-2xl border border-[#2a3942] flex items-center justify-between">
+      <div class="glass-panel p-5 rounded-2xl border border-wa-border flex items-center justify-between">
         <div>
           <p class="text-xs font-medium text-slate-400">Total Chat Records</p>
           <h3 class="text-2xl font-black text-white mt-1">{{ stats?.messages?.total || 0 }}</h3>
@@ -64,7 +64,7 @@
       </div>
 
       <!-- Messages Sent vs Received -->
-      <div class="glass-panel p-5 rounded-2xl border border-[#2a3942] flex items-center justify-between">
+      <div class="glass-panel p-5 rounded-2xl border border-wa-border flex items-center justify-between">
         <div>
           <p class="text-xs font-medium text-slate-400">Sent / Received (24h)</p>
           <h3 class="text-xl font-bold text-white mt-1">
@@ -82,7 +82,7 @@
       </div>
 
       <!-- Webhook Success Rate -->
-      <div class="glass-panel p-5 rounded-2xl border border-[#2a3942] flex items-center justify-between">
+      <div class="glass-panel p-5 rounded-2xl border border-wa-border flex items-center justify-between">
         <div>
           <p class="text-xs font-medium text-slate-400">Webhook Deliveries</p>
           <h3 class="text-2xl font-black text-white mt-1">{{ stats?.webhooks?.successRate || '100%' }}</h3>
@@ -103,7 +103,7 @@
         <RouterLink to="/sessions" class="text-xs text-emerald-400 hover:underline">View All Devices &rarr;</RouterLink>
       </div>
 
-      <div v-if="sessions.length === 0" class="glass-panel p-10 rounded-3xl border border-dashed border-[#2a3942] text-center space-y-3">
+      <div v-if="sessions.length === 0" class="glass-panel p-10 rounded-3xl border border-dashed border-wa-border text-center space-y-3">
         <div class="w-12 h-12 mx-auto rounded-full bg-slate-800 text-slate-400 flex items-center justify-center">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -120,7 +120,7 @@
         <div 
           v-for="s in sessions" 
           :key="s.session_id" 
-          class="glass-panel p-5 rounded-2xl border border-[#2a3942] hover:border-emerald-500/40 transition space-y-4 group"
+          class="glass-panel p-5 rounded-2xl border border-wa-border hover:border-emerald-500/40 transition space-y-4 group"
         >
           <div class="flex items-start justify-between">
             <div class="space-y-1">
@@ -130,7 +130,7 @@
             <StatusBadge :status="s.status" :is-live="s.is_live_active" />
           </div>
 
-          <div class="bg-[#202c33]/50 p-3 rounded-xl border border-[#2a3942]/60 text-xs space-y-1">
+          <div class="bg-wa-panel/50 p-3 rounded-xl border border-wa-border/60 text-xs space-y-1">
             <div class="flex items-center justify-between text-slate-400">
               <span>Connected Phone:</span>
               <span class="font-mono text-white">{{ s.phone_number || '-' }}</span>
@@ -155,11 +155,11 @@
             <RouterLink 
               v-else 
               :to="{ path: '/sender', query: { session: s.session_id } }"
-              class="flex-1 py-2 rounded-xl bg-[#202c33] hover:bg-slate-700 text-emerald-400 text-xs font-semibold transition text-center border border-[#2a3942]"
+              class="flex-1 py-2 rounded-xl bg-wa-panel hover:bg-slate-700 text-emerald-400 text-xs font-semibold transition text-center border border-wa-border"
             >
               Send Message
             </RouterLink>
-            <RouterLink :to="{ path: '/sessions' }" class="p-2 rounded-xl bg-[#202c33] hover:bg-slate-700 text-slate-300 border border-[#2a3942] transition">
+            <RouterLink :to="{ path: '/sessions' }" class="p-2 rounded-xl bg-wa-panel hover:bg-slate-700 text-slate-300 border border-wa-border transition">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />

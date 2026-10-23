@@ -18,10 +18,10 @@
     </div>
 
     <!-- Users Table -->
-    <div class="glass-panel rounded-2xl border border-[#2a3942] overflow-hidden">
+    <div class="glass-panel rounded-2xl border border-wa-border overflow-hidden">
       <div class="overflow-x-auto">
         <table class="w-full text-left text-xs">
-          <thead class="bg-[#202c33]/70 text-slate-400 uppercase font-semibold border-b border-[#2a3942]">
+          <thead class="bg-wa-panel/70 text-slate-400 uppercase font-semibold border-b border-wa-border">
             <tr>
               <th class="px-6 py-4">ID</th>
               <th class="px-6 py-4">Username</th>
@@ -31,8 +31,8 @@
               <th class="px-6 py-4 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-[#2a3942]/60">
-            <tr v-for="u in users" :key="u.id" class="hover:bg-[#202c33]/40 transition">
+          <tbody class="divide-y divide-wa-border/60">
+            <tr v-for="u in users" :key="u.id" class="hover:bg-wa-panel/40 transition">
               <td class="px-6 py-4 font-mono text-slate-400">#{{ u.id }}</td>
               <td class="px-6 py-4 font-bold text-white">{{ u.username }}</td>
               <td class="px-6 py-4 text-slate-300">{{ u.email || '-' }}</td>
@@ -53,9 +53,9 @@
     </div>
 
     <!-- Create User Modal -->
-    <div v-if="showCreateModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-      <div class="w-full max-w-md bg-[#111b21] border border-[#2a3942] rounded-3xl p-6 shadow-2xl space-y-4">
-        <div class="flex items-center justify-between pb-3 border-b border-[#2a3942]">
+    <div v-if="showCreateModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs animate-fadeIn">
+      <div class="w-full max-w-md bg-wa-card border border-wa-border rounded-3xl p-6 shadow-2xl space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-wa-border">
           <h3 class="text-base font-bold text-white">Create New User</h3>
           <button @click="showCreateModal = false" class="text-slate-400 hover:text-white p-1 rounded-lg">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -67,19 +67,19 @@
         <form @submit.prevent="handleCreateUser" class="space-y-3">
           <div>
             <label class="block text-xs font-semibold text-slate-300 mb-1">Username</label>
-            <input v-model="userForm.username" type="text" required class="w-full px-4 py-2.5 bg-[#202c33] border border-[#2a3942] rounded-xl text-white text-xs focus:border-emerald-500 focus:outline-none" />
+            <input v-model="userForm.username" type="text" required class="w-full px-4 py-2.5 bg-wa-panel border border-wa-border rounded-xl text-white text-xs focus:border-emerald-500 focus:outline-hidden" />
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-300 mb-1">Email (Optional)</label>
-            <input v-model="userForm.email" type="email" class="w-full px-4 py-2.5 bg-[#202c33] border border-[#2a3942] rounded-xl text-white text-xs focus:border-emerald-500 focus:outline-none" />
+            <input v-model="userForm.email" type="email" class="w-full px-4 py-2.5 bg-wa-panel border border-wa-border rounded-xl text-white text-xs focus:border-emerald-500 focus:outline-hidden" />
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-300 mb-1">Password</label>
-            <input v-model="userForm.password" type="password" required class="w-full px-4 py-2.5 bg-[#202c33] border border-[#2a3942] rounded-xl text-white text-xs focus:border-emerald-500 focus:outline-none" />
+            <input v-model="userForm.password" type="password" required class="w-full px-4 py-2.5 bg-wa-panel border border-wa-border rounded-xl text-white text-xs focus:border-emerald-500 focus:outline-hidden" />
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-300 mb-1">Role</label>
-            <select v-model="userForm.role" class="w-full px-4 py-2.5 bg-[#202c33] border border-[#2a3942] rounded-xl text-white text-xs focus:border-emerald-500 focus:outline-none">
+            <select v-model="userForm.role" class="w-full px-4 py-2.5 bg-wa-panel border border-wa-border rounded-xl text-white text-xs focus:border-emerald-500 focus:outline-hidden">
               <option value="admin">Administrator</option>
               <option value="operator">Operator</option>
             </select>
@@ -92,9 +92,9 @@
     </div>
 
     <!-- Edit User Modal -->
-    <div v-if="showEditModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-      <div class="w-full max-w-md bg-[#111b21] border border-[#2a3942] rounded-3xl p-6 shadow-2xl space-y-4">
-        <div class="flex items-center justify-between pb-3 border-b border-[#2a3942]">
+    <div v-if="showEditModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs animate-fadeIn">
+      <div class="w-full max-w-md bg-wa-card border border-wa-border rounded-3xl p-6 shadow-2xl space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-wa-border">
           <h3 class="text-base font-bold text-white">Edit User ({{ editUserForm.username }})</h3>
           <button @click="showEditModal = false" class="text-slate-400 hover:text-white p-1 rounded-lg">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -106,15 +106,15 @@
         <form @submit.prevent="handleUpdateUser" class="space-y-3">
           <div>
             <label class="block text-xs font-semibold text-slate-300 mb-1">Email</label>
-            <input v-model="editUserForm.email" type="email" class="w-full px-4 py-2.5 bg-[#202c33] border border-[#2a3942] rounded-xl text-white text-xs focus:border-emerald-500 focus:outline-none" />
+            <input v-model="editUserForm.email" type="email" class="w-full px-4 py-2.5 bg-wa-panel border border-wa-border rounded-xl text-white text-xs focus:border-emerald-500 focus:outline-hidden" />
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-300 mb-1">New Password (Leave blank to keep current)</label>
-            <input v-model="editUserForm.password" type="password" placeholder="••••••••" class="w-full px-4 py-2.5 bg-[#202c33] border border-[#2a3942] rounded-xl text-white text-xs focus:border-emerald-500 focus:outline-none" />
+            <input v-model="editUserForm.password" type="password" placeholder="••••••••" class="w-full px-4 py-2.5 bg-wa-panel border border-wa-border rounded-xl text-white text-xs focus:border-emerald-500 focus:outline-hidden" />
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-300 mb-1">Role</label>
-            <select v-model="editUserForm.role" class="w-full px-4 py-2.5 bg-[#202c33] border border-[#2a3942] rounded-xl text-white text-xs focus:border-emerald-500 focus:outline-none">
+            <select v-model="editUserForm.role" class="w-full px-4 py-2.5 bg-wa-panel border border-wa-border rounded-xl text-white text-xs focus:border-emerald-500 focus:outline-hidden">
               <option value="admin">Administrator</option>
               <option value="operator">Operator</option>
             </select>

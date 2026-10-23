@@ -18,13 +18,13 @@
     </div>
 
     <!-- Logs Table -->
-    <div class="glass-panel rounded-2xl border border-[#2a3942] overflow-hidden">
-      <div class="p-4 border-b border-[#2a3942] flex items-center justify-between gap-4">
+    <div class="glass-panel rounded-2xl border border-wa-border overflow-hidden">
+      <div class="p-4 border-b border-wa-border flex items-center justify-between gap-4">
         <div class="flex items-center gap-3">
           <select 
             v-model="filterEvent" 
             @change="fetchLogs"
-            class="px-3 py-1.5 bg-[#202c33] border border-[#2a3942] rounded-xl text-xs text-white focus:outline-none"
+            class="px-3 py-1.5 bg-wa-panel border border-wa-border rounded-xl text-xs text-white focus:outline-hidden"
           >
             <option value="">All Events</option>
             <option value="message.received">message.received</option>
@@ -47,7 +47,7 @@
 
       <div v-else class="overflow-x-auto">
         <table class="w-full text-left text-xs">
-          <thead class="bg-[#202c33]/70 text-slate-400 uppercase font-semibold border-b border-[#2a3942]">
+          <thead class="bg-wa-panel/70 text-slate-400 uppercase font-semibold border-b border-wa-border">
             <tr>
               <th class="px-6 py-4">Timestamp</th>
               <th class="px-6 py-4">Event</th>
@@ -58,18 +58,18 @@
               <th class="px-6 py-4 text-right">Payload</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-[#2a3942]/60">
-            <tr v-for="log in logs" :key="log._id" class="hover:bg-[#202c33]/40 transition">
+          <tbody class="divide-y divide-wa-border/60">
+            <tr v-for="log in logs" :key="log._id" class="hover:bg-wa-panel/40 transition">
               <td class="px-6 py-4 font-mono text-slate-400 text-[11px]">{{ formatDate(log.created_at) }}</td>
               <td class="px-6 py-4">
-                <span class="px-2 py-0.5 rounded font-mono text-[11px] bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                <span class="px-2 py-0.5 rounded-sm font-mono text-[11px] bg-blue-500/10 text-blue-400 border border-blue-500/20">
                   {{ log.event }}
                 </span>
               </td>
               <td class="px-6 py-4 font-mono text-emerald-400">{{ log.session_id }}</td>
               <td class="px-6 py-4 text-slate-300 font-mono text-[11px] max-w-xs truncate">{{ log.target_url }}</td>
               <td class="px-6 py-4">
-                <span :class="log.success ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' : 'text-rose-400 bg-rose-500/10 border-rose-500/20'" class="px-2 py-0.5 rounded text-[11px] font-bold border">
+                <span :class="log.success ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' : 'text-rose-400 bg-rose-500/10 border-rose-500/20'" class="px-2 py-0.5 rounded-sm text-[11px] font-bold border">
                   {{ log.response_status || 'ERROR' }}
                 </span>
               </td>
@@ -84,9 +84,9 @@
     </div>
 
     <!-- Test Webhook Modal -->
-    <div v-if="showTestModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-      <div class="w-full max-w-md bg-[#111b21] border border-[#2a3942] rounded-3xl p-6 shadow-2xl space-y-4">
-        <div class="flex items-center justify-between pb-3 border-b border-[#2a3942]">
+    <div v-if="showTestModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs animate-fadeIn">
+      <div class="w-full max-w-md bg-wa-card border border-wa-border rounded-3xl p-6 shadow-2xl space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-wa-border">
           <h3 class="text-base font-bold text-white">Send Webhook Test Ping</h3>
           <button @click="showTestModal = false" class="text-slate-400 hover:text-white p-1 rounded-lg">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -103,7 +103,7 @@
               type="url" 
               required 
               placeholder="https://webhook.site/..." 
-              class="w-full px-4 py-2.5 bg-[#202c33] border border-[#2a3942] rounded-xl text-white text-xs focus:border-emerald-500 focus:outline-none"
+              class="w-full px-4 py-2.5 bg-wa-panel border border-wa-border rounded-xl text-white text-xs focus:border-emerald-500 focus:outline-hidden"
             />
           </div>
 
@@ -113,7 +113,7 @@
               v-model="testSecret" 
               type="text" 
               placeholder="my-secret-key" 
-              class="w-full px-4 py-2.5 bg-[#202c33] border border-[#2a3942] rounded-xl text-white text-xs focus:border-emerald-500 focus:outline-none"
+              class="w-full px-4 py-2.5 bg-wa-panel border border-wa-border rounded-xl text-white text-xs focus:border-emerald-500 focus:outline-hidden"
             />
           </div>
 
@@ -123,16 +123,16 @@
           </button>
         </form>
 
-        <div v-if="testResult" class="p-3 bg-[#0b141a] rounded-xl border border-[#2a3942] text-[11px] font-mono text-slate-300 overflow-x-auto max-h-48">
+        <div v-if="testResult" class="p-3 bg-wa-dark rounded-xl border border-wa-border text-[11px] font-mono text-slate-300 overflow-x-auto max-h-48">
           <pre>{{ JSON.stringify(testResult, null, 2) }}</pre>
         </div>
       </div>
     </div>
 
     <!-- View Payload Modal -->
-    <div v-if="selectedPayload" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-      <div class="w-full max-w-xl bg-[#111b21] border border-[#2a3942] rounded-3xl p-6 shadow-2xl space-y-4">
-        <div class="flex items-center justify-between pb-3 border-b border-[#2a3942]">
+    <div v-if="selectedPayload" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs animate-fadeIn">
+      <div class="w-full max-w-xl bg-wa-card border border-wa-border rounded-3xl p-6 shadow-2xl space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-wa-border">
           <h3 class="text-base font-bold text-white">Webhook Request Payload</h3>
           <button @click="selectedPayload = null" class="text-slate-400 hover:text-white p-1 rounded-lg">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -140,7 +140,7 @@
             </svg>
           </button>
         </div>
-        <pre class="bg-[#0b141a] p-4 rounded-xl text-slate-300 font-mono text-xs overflow-x-auto max-h-96 border border-[#2a3942]">{{ JSON.stringify(selectedPayload.request_payload, null, 2) }}</pre>
+        <pre class="bg-wa-dark p-4 rounded-xl text-slate-300 font-mono text-xs overflow-x-auto max-h-96 border border-wa-border">{{ JSON.stringify(selectedPayload.request_payload, null, 2) }}</pre>
       </div>
     </div>
   </div>
