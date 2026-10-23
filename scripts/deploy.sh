@@ -28,6 +28,12 @@ if [ -d ".git" ]; then
   git pull origin main || true
 fi
 
+# Build image bisa diam berpuluh detik (npm install). Cetak penanda berkala supaya sesi SSH
+# dari CI tidak dianggap menganggur dan diputus oleh firewall/NAT.
+( while true; do sleep 30; echo "⏳ deploy masih berjalan..."; done ) &
+HEARTBEAT_PID=$!
+trap 'kill "$HEARTBEAT_PID" 2>/dev/null || true' EXIT
+
 # 4. Pull base images & Build
 echo "🐳 Menarik base images..."
 $DOCKER_CMD pull wa-postgres wa-mongo || true

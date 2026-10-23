@@ -4,14 +4,11 @@ FROM node:24-alpine AS build-stage
 WORKDIR /app
 
 COPY package*.json ./
-# xlsx diambil langsung dari CDN SheetJS (bukan registry npm), yang pernah timeout
-# saat build (ETIMEDOUT). npm default nyaris tidak retry request lambat; naikkan
-# timeout & retry supaya satu hiccup jaringan ke CDN pihak ketiga tidak langsung
-# menggagalkan seluruh build.
-RUN npm config set fetch-timeout 300000 \
- && npm config set fetch-retries 5 \
- && npm config set fetch-retry-mintimeout 20000 \
- && npm config set fetch-retry-maxtimeout 120000 \
+# xlsx comes from a tarball kept in the repo (vendor/), not from the SheetJS CDN, so the
+# build does not depend on a third-party host that has timed out on the server before.
+COPY vendor ./vendor
+RUN npm config set fetch-timeout 120000 \
+ && npm config set fetch-retries 3 \
  && npm install
 
 COPY . .

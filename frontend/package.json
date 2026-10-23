@@ -17,7 +17,7 @@
     "sweetalert2": "^11.26.25",
     "vue": "^3.5.44",
     "vue-router": "^5.4.0",
-    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
+    "xlsx": "file:vendor/xlsx-0.20.3.tgz"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
