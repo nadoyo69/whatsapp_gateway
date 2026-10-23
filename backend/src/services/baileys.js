@@ -121,7 +121,7 @@ async function startSocket(sessionId, options = {}) {
       const statusCode = lastDisconnect?.error?.output?.statusCode;
       const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
       
-      console.log(`[Baileys] Session "${sessionId}" connection closed. Status code: ${statusCode}. Reconnecting: ${shouldReconnect}`);
+      console.log(`[Baileys] Session "${sessionId}" connection closed. Status code: ${statusCode}. Reason: ${lastDisconnect?.error?.message || 'unknown'}. Reconnecting: ${shouldReconnect}`);
 
       qrCodes.delete(sessionId);
       pairingCodes.delete(sessionId);
