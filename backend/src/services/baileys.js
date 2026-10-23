@@ -31,19 +31,31 @@ if (!fs.existsSync(SESSIONS_DIR)) {
   fs.mkdirSync(SESSIONS_DIR, { recursive: true });
 }
 
-/**
- * Initialize a Baileys WhatsApp Session
- * @param {string} sessionId 
- * @param {object} options 
- */
-async function initSession(sessionId, options = {}) {
-  if (sessions.has(sessionId)) {
-    const existing = sessions.get(sessionId);
-    if (existing?.user) {
-      return { status: 'already_connected', sessionId };
-    }
-  }
+// Inisialisasi yang sedang berjalan per sesi. Membuat soket butuh beberapa await (auth state,
+// fetchLatestBaileysVersion lewat jaringan), jadi pemanggil lain yang datang di sela-selanya
+// (mis. polling QR tiap detik) menunggu promise yang sama, bukan membuka soket Baileys baru
+// dengan kredensial yang sama (yang membuat WhatsApp memutus semuanya dan memicu loop reconnect).
+const inflightInits = new Map();
 
+/**
+ * Initialize a Baileys WhatsApp Session. Idempotent: at most one live socket per session.
+ * @param {string} sessionId
+ * @param {object} options
+ */
+function initSession(sessionId, options = {}) {
+  const existing = sessions.get(sessionId);
+  if (existing && !existing.__closed) {
+    return Promise.resolve({ status: existing.user ? 'already_connected' : 'connecting', sessionId });
+  }
+  if (inflightInits.has(sessionId)) {
+    return inflightInits.get(sessionId);
+  }
+  const pending = startSocket(sessionId, options).finally(() => inflightInits.delete(sessionId));
+  inflightInits.set(sessionId, pending);
+  return pending;
+}
+
+async function startSocket(sessionId, options = {}) {
   const sessionPath = path.join(SESSIONS_DIR, sessionId);
   if (!fs.existsSync(sessionPath)) {
     fs.mkdirSync(sessionPath, { recursive: true });
@@ -105,6 +117,7 @@ async function initSession(sessionId, options = {}) {
     }
 
     if (connection === 'close') {
+      sock.__closed = true; // lets initSession tell a dead socket from one still connecting
       const statusCode = lastDisconnect?.error?.output?.statusCode;
       const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
       
