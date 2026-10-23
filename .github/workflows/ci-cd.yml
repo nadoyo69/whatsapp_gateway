@@ -74,7 +74,9 @@ jobs:
             REPO_URL="git@github.com:nadoyo69/whatsapp_gateway.git"
             export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=accept-new -o BatchMode=yes"
             # Bila ada kunci khusus server (didaftarkan di akun GitHub), pakai itu saja; kalau tidak, kunci bawaan ssh.
-            [ -f "$HOME/.ssh/id_ed25519_nadoyo" ] && export GIT_SSH_COMMAND="ssh -i $HOME/.ssh/id_ed25519_nadoyo -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new -o BatchMode=yes"
+            # "|| true" di akhir WAJIB ada: kalau file tidak ada, exit code baris ini tetap 0 sehingga
+            # script_stop:true tidak ikut menghentikan deploy (lihat catatan di langkah docker compose di bawah).
+            [ -f "$HOME/.ssh/id_ed25519_nadoyo" ] && export GIT_SSH_COMMAND="ssh -i $HOME/.ssh/id_ed25519_nadoyo -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new -o BatchMode=yes" || true
 
             if [ ! -d ".git" ]; then
               echo "Initializing git repository..."
@@ -95,21 +97,13 @@ jobs:
               exit 1
             fi
 
-            echo "Preparing Docker Compose..."
-            if docker compose version > /dev/null 2>&1; then
-              DOCKER_CMD="docker compose"
-            else
-              DOCKER_CMD="docker-compose"
-            fi
-
-            echo "Building and restarting containers..."
-            $DOCKER_CMD pull wa-postgres wa-mongo || true
-            $DOCKER_CMD build
-            $DOCKER_CMD up -d --remove-orphans
-            docker image prune -f || true
-
-            echo "Current containers status:"
-            $DOCKER_CMD ps
+            # Sisa langkah (deteksi docker compose vs docker-compose, build, up, prune) dijalankan
+            # sebagai proses bash terpisah via scripts/deploy.sh. Ini WAJIB: script_stop:true di atas
+            # menyisipkan cek "stop kalau exit code != 0" setelah SETIAP baris, termasuk baris di dalam
+            # blok if/then — jadi deteksi "docker compose version || docker-compose" tidak pernah sampai
+            # ke cabang else-nya kalau ditulis inline di sini. Proses bash baru tidak terkena instrumentasi itu.
+            chmod +x scripts/deploy.sh
+            bash scripts/deploy.sh
 
             echo "=================================================="
             echo "Deployment WhatsApp Gateway Selesai!"

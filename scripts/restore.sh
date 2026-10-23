@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 # ==============================================================================
 # Script Restore Data WhatsApp Gateway (Postgres, Mongo, WA Sessions)
 # Penggunaan: bash scripts/restore.sh backups/wa_gateway_backup_YYYYMMDD_HHMMSS.tar.gz
