@@ -226,7 +226,7 @@ async function initSession(sessionId, options = {}) {
                 },
                 $inc: { unread_count: fromMe ? 0 : 1 }
               },
-              { upsert: true, new: true }
+              { upsert: true, returnDocument: 'after' }
             );
           }
 
